@@ -1,2 +1,2 @@
-# SIGIE---Sistema-Integrado-de-Gest-o-de-Inform-tica-e-estoque
+# SIGIE---Sistema-Integrado-de-Gestao-de-Informatica-e-estoque
 Pequeno Resumo relacionado ao projeto
