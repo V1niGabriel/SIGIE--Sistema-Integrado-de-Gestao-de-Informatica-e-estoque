@@ -1,0 +1,12 @@
+<% content_for :title, "Editing orcamento" %>
+
+<h1>Editing orcamento</h1>
+
+<%= render "form", orcamento: @orcamento %>
+
+<br>
+
+<div>
+  <%= link_to "Show this orcamento", @orcamento %> |
+  <%= link_to "Back to orcamentos", orcamentos_path %>
+</div>

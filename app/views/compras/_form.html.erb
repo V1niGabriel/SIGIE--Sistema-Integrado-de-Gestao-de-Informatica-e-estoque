@@ -1,0 +1,47 @@
+<%= form_with(model: compra) do |form| %>
+  <% if compra.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(compra.errors.count, "error") %> prohibited this compra from being saved:</h2>
+
+      <ul>
+        <% compra.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :fornecedor_id, style: "display: block" %>
+    <%= form.text_field :fornecedor_id %>
+  </div>
+
+  <div>
+    <%= form.label :item_id, style: "display: block" %>
+    <%= form.text_field :item_id %>
+  </div>
+
+  <div>
+    <%= form.label :descricao, style: "display: block" %>
+    <%= form.text_field :descricao %>
+  </div>
+
+  <div>
+    <%= form.label :valor_total, style: "display: block" %>
+    <%= form.text_field :valor_total %>
+  </div>
+
+  <div>
+    <%= form.label :data_vencimento, style: "display: block" %>
+    <%= form.datetime_field :data_vencimento %>
+  </div>
+
+  <div>
+    <%= form.label :status, style: "display: block" %>
+    <%= form.number_field :status %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

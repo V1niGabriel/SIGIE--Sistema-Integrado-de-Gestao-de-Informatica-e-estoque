@@ -1,0 +1,37 @@
+<%= form_with(model: venda) do |form| %>
+  <% if venda.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(venda.errors.count, "error") %> prohibited this venda from being saved:</h2>
+
+      <ul>
+        <% venda.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :cliente_id, style: "display: block" %>
+    <%= form.text_field :cliente_id %>
+  </div>
+
+  <div>
+    <%= form.label :funcionario_id, style: "display: block" %>
+    <%= form.text_field :funcionario_id %>
+  </div>
+
+  <div>
+    <%= form.label :data_venda, style: "display: block" %>
+    <%= form.datetime_field :data_venda %>
+  </div>
+
+  <div>
+    <%= form.label :status_pagamento, style: "display: block" %>
+    <%= form.number_field :status_pagamento %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

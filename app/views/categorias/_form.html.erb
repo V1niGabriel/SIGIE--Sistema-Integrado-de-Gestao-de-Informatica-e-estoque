@@ -1,0 +1,22 @@
+<%= form_with(model: categoria) do |form| %>
+  <% if categoria.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(categoria.errors.count, "error") %> prohibited this categoria from being saved:</h2>
+
+      <ul>
+        <% categoria.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :nome_categoria, style: "display: block" %>
+    <%= form.text_field :nome_categoria %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  fornecedor: one
+  item: one
+  descricao: MyString
+  valor_total: 9.99
+  data_vencimento: 2026-04-23 22:11:17
+  status: 1
+
+two:
+  fornecedor: two
+  item: two
+  descricao: MyString
+  valor_total: 9.99
+  data_vencimento: 2026-04-23 22:11:17
+  status: 1

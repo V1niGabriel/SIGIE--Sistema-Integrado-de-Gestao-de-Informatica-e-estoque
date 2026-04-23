@@ -1,0 +1,57 @@
+<%= form_with(model: item) do |form| %>
+  <% if item.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(item.errors.count, "error") %> prohibited this item from being saved:</h2>
+
+      <ul>
+        <% item.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :fornecedor_id, style: "display: block" %>
+    <%= form.text_field :fornecedor_id %>
+  </div>
+
+  <div>
+    <%= form.label :categoria_id, style: "display: block" %>
+    <%= form.text_field :categoria_id %>
+  </div>
+
+  <div>
+    <%= form.label :fabricante_id, style: "display: block" %>
+    <%= form.text_field :fabricante_id %>
+  </div>
+
+  <div>
+    <%= form.label :descricao, style: "display: block" %>
+    <%= form.text_field :descricao %>
+  </div>
+
+  <div>
+    <%= form.label :quantidade_estoque, style: "display: block" %>
+    <%= form.number_field :quantidade_estoque %>
+  </div>
+
+  <div>
+    <%= form.label :preco_custo, style: "display: block" %>
+    <%= form.text_field :preco_custo %>
+  </div>
+
+  <div>
+    <%= form.label :preco_venda, style: "display: block" %>
+    <%= form.text_field :preco_venda %>
+  </div>
+
+  <div>
+    <%= form.label :ncm, style: "display: block" %>
+    <%= form.text_field :ncm %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

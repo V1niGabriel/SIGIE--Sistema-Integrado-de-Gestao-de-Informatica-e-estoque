@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Orcamentos" %>
+
+<h1>Orcamentos</h1>
+
+<div id="orcamentos">
+  <% @orcamentos.each do |orcamento| %>
+    <%= render orcamento %>
+    <p>
+      <%= link_to "Show this orcamento", orcamento %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New orcamento", new_orcamento_path %>

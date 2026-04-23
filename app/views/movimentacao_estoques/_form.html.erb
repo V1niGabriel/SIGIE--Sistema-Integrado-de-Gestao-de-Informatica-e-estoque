@@ -1,0 +1,57 @@
+<%= form_with(model: movimentacao_estoque) do |form| %>
+  <% if movimentacao_estoque.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(movimentacao_estoque.errors.count, "error") %> prohibited this movimentacao_estoque from being saved:</h2>
+
+      <ul>
+        <% movimentacao_estoque.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :funcionario_id, style: "display: block" %>
+    <%= form.text_field :funcionario_id %>
+  </div>
+
+  <div>
+    <%= form.label :item_id, style: "display: block" %>
+    <%= form.text_field :item_id %>
+  </div>
+
+  <div>
+    <%= form.label :venda_id, style: "display: block" %>
+    <%= form.text_field :venda_id %>
+  </div>
+
+  <div>
+    <%= form.label :compra_id, style: "display: block" %>
+    <%= form.text_field :compra_id %>
+  </div>
+
+  <div>
+    <%= form.label :tipo, style: "display: block" %>
+    <%= form.number_field :tipo %>
+  </div>
+
+  <div>
+    <%= form.label :quantidade, style: "display: block" %>
+    <%= form.number_field :quantidade %>
+  </div>
+
+  <div>
+    <%= form.label :motivo, style: "display: block" %>
+    <%= form.text_field :motivo %>
+  </div>
+
+  <div>
+    <%= form.label :data, style: "display: block" %>
+    <%= form.datetime_field :data %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

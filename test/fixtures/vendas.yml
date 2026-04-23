@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  cliente: one
+  funcionario: one
+  data_venda: 2026-04-23 21:20:09
+  status_pagamento: 1
+
+two:
+  cliente: two
+  funcionario: two
+  data_venda: 2026-04-23 21:20:09
+  status_pagamento: 1

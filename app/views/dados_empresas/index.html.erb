@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Dados empresas" %>
+
+<h1>Dados empresas</h1>
+
+<div id="dados_empresas">
+  <% @dados_empresas.each do |dados_empresa| %>
+    <%= render dados_empresa %>
+    <p>
+      <%= link_to "Show this dados empresa", dados_empresa %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New dados empresa", new_dados_empresa_path %>

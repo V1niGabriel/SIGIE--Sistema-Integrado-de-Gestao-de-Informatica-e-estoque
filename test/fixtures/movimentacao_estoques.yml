@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  funcionario: one
+  item: one
+  venda: one
+  compra: one
+  tipo: 1
+  quantidade: 1
+  motivo: MyString
+  data: 2026-04-23 22:14:06
+
+two:
+  funcionario: two
+  item: two
+  venda: two
+  compra: two
+  tipo: 1
+  quantidade: 1
+  motivo: MyString
+  data: 2026-04-23 22:14:06

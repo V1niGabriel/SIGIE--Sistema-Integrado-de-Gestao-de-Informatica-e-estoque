@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @dados_empresa %>
+
+<div>
+  <%= link_to "Edit this dados empresa", edit_dados_empresa_path(@dados_empresa) %> |
+  <%= link_to "Back to dados empresas", dados_empresas_path %>
+
+  <%= button_to "Destroy this dados empresa", @dados_empresa, method: :delete %>
+</div>

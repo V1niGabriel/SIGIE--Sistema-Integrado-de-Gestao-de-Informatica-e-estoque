@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  cargo: one
+  nome: MyString
+  cpf: MyString
+  email: MyString
+  telefone: MyString
+  data_admissao: 2026-04-23 20:31:46
+  senha_hash: MyString
+
+two:
+  cargo: two
+  nome: MyString
+  cpf: MyString
+  email: MyString
+  telefone: MyString
+  data_admissao: 2026-04-23 20:31:46
+  senha_hash: MyString
