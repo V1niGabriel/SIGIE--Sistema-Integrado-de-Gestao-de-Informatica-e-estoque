@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_21_000015) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_26_125814) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -105,13 +105,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_21_000015) do
     t.datetime "created_at", null: false
     t.datetime "data_admissao", null: false
     t.string "email", limit: 100, null: false
+    t.string "encrypted_password", default: "", null: false
     t.string "nome", null: false
-    t.string "senha_hash", null: false
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
     t.string "telefone", limit: 11, null: false
     t.datetime "updated_at", null: false
     t.index ["cargo_id"], name: "index_funcionarios_on_cargo_id"
     t.index ["cpf"], name: "index_funcionarios_on_cpf", unique: true
     t.index ["email"], name: "index_funcionarios_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_funcionarios_on_reset_password_token", unique: true
   end
 
   create_table "itens", force: :cascade do |t|
@@ -191,20 +195,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_21_000015) do
     t.index ["funcionario_id"], name: "index_vendas_on_funcionario_id"
   end
 
-  add_foreign_key "compras", "fornecedores", column: "fornecedor_id"
-  add_foreign_key "compras", "itens", column: "item_id"
+  add_foreign_key "compras", "fornecedores"
+  add_foreign_key "compras", "itens"
   add_foreign_key "enderecos", "clientes"
   add_foreign_key "funcionarios", "cargos"
   add_foreign_key "itens", "categorias"
   add_foreign_key "itens", "fabricantes"
-  add_foreign_key "itens", "fornecedores", column: "fornecedor_id"
-  add_foreign_key "itens_orcamento", "itens", column: "item_id"
+  add_foreign_key "itens", "fornecedores"
+  add_foreign_key "itens_orcamento", "itens"
   add_foreign_key "itens_orcamento", "orcamentos"
-  add_foreign_key "itens_venda", "itens", column: "item_id"
+  add_foreign_key "itens_venda", "itens"
   add_foreign_key "itens_venda", "vendas"
   add_foreign_key "movimentacao_estoques", "compras"
   add_foreign_key "movimentacao_estoques", "funcionarios"
-  add_foreign_key "movimentacao_estoques", "itens", column: "item_id"
+  add_foreign_key "movimentacao_estoques", "itens"
   add_foreign_key "movimentacao_estoques", "vendas"
   add_foreign_key "orcamentos", "clientes"
   add_foreign_key "orcamentos", "funcionarios"

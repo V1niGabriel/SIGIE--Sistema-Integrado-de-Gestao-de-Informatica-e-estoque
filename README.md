@@ -1,5 +1,10 @@
 # README
 
+Incialização dos arquivos com os dados inicias do sistema
+Rodar o comando:
+
+`docker compose exec web rails db:seed`
+
 This README would normally document whatever steps are necessary to get the
 application up and running.
 

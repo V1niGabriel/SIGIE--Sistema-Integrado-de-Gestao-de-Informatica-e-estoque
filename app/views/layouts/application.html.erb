@@ -14,8 +14,8 @@
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="icon" href="/icon_logo.png" type="image/png">
+    <link rel="icon" href="/icon_logo.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
@@ -24,6 +24,21 @@
   </head>
 
   <body>
+  <%# Este bloco só aparece se o usuário estiver logado %>
+    <% if funcionario_signed_in? %>
+      <div style="background-color: #3e32a8; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; margin-bottom: 20px;">
+        
+        <div>
+          <strong>SIGIE</strong> | Logado como: <%= current_funcionario.nome %> (<%= current_funcionario.cargo.titulo %>)
+        </div>
+
+        <div>
+          <%# O botão de Sair exige o método DELETE %>
+          <%= button_to "Sair", destroy_funcionario_session_path, method: :delete, style: "background-color: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold;" %>
+        </div>
+        
+      </div>
+    <% end %>
     <%= yield %>
   </body>
 </html>

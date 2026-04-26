@@ -1,0 +1,76 @@
+<div class="login-page-wrapper">
+  <div class="left-panel">
+    <div class="top-section">
+      <%= link_to "O que há de novo?", "#", class: "whats-new-btn" %>
+    </div>
+
+    <div class="middle-section">
+      <div class="image-placeholder">
+        <span class="imagem-placeholder-plot1">
+          <%= image_tag "Portal-do-Sistema.png", alt: "Imagem ilustrativa do sistema" %>
+        </span>
+      </div>
+    </div>
+
+    <div class="bottom-section">
+      <div class="pagination-lines">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line active"></div>
+        <div class="line"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="header-actions">
+      <div class="language-selector">
+        🇧🇷 Português ▾
+      </div>
+      <div class="theme-toggle">🌙</div>
+    </div>
+
+    <div class="login-container">
+      <div class="logo-space">
+        <%= image_tag "Logo_SIGIE.png", alt: "Logo SIGIE" %>
+      </div>
+      
+      <h1>Entre em sua conta</h1>
+      <p>Ofereça experiências incríveis aos seus clientes</p>
+
+      <% if notice %>
+        <p style="color: #3b82f6; font-size: 0.9rem; margin-bottom: 15px; font-weight: 500;"><%= notice %></p>
+      <% end %>
+      <% if alert %>
+        <p style="color: #ef4444; font-size: 0.9rem; margin-bottom: 15px; font-weight: 500;"><%= alert %></p>
+      <% end %>
+
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "login-form" }) do |f| %>
+        
+        <div class="form-group">
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "E-mail", required: true %>
+        </div>
+        
+        <div class="form-group">
+          <%= f.password_field :password, autocomplete: "current-password", placeholder: "Senha", required: true %>
+          <span class="eye-icon"></span>
+        </div>
+
+        <div class="form-options">
+          <label>
+            <% if devise_mapping.rememberable? %>
+              <%= f.check_box :remember_me %> Lembrar e-mail
+            <% end %>
+          </label>
+          
+          <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+            <%= link_to "Esqueceu sua senha?", new_password_path(resource_name), class: "forgot-password" %>
+          <% end %>
+        </div>
+
+        <%= f.submit "Entrar", class: "btn-submit" %>
+
+      <% end %>
+      </div>
+  </div>
+</div>

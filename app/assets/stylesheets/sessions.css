@@ -59,15 +59,32 @@
 }
 
 .image-placeholder {
-  width: 80%;
-  height: 300px;
-  border: 2px dashed rgba(255, 255, 255, 0.3);
+  width: 75%;
+  height: 500px;
+  border: 3px dashed rgba(255, 255, 255, 0.3);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: rgba(255, 255, 255, 0.6);
   font-size: 1.2rem;
+}
+
+.imagem-placeholder-plot1 {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px; /* Acompanha o arredondamento do contêiner pai */
+  overflow: hidden;    /* Impede que as pontas da imagem vazem pelas bordas arredondadas */
+}
+
+.imagem-placeholder-plot1 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ajusta a imagem inteira dentro do espaço sem cortar nada */
+  /* Dica: Se você preferir que a imagem preencha 100% do quadrado (mesmo que corte um pouco as laterais), mude 'contain' para 'cover' */
 }
 
 .bottom-section {

@@ -1,4 +1,15 @@
 Rails.application.routes.draw do
+
+  # 1. AUTENTICAÇÃO (Devise)
+  # Aletera o caminho para 'auth' para não conflitar com o CRUD de funcionários.
+  # URL de login será: http://localhost:3000/auth/login
+  devise_for :funcionarios, path: 'auth', path_names: { 
+    sign_in: 'login', 
+    sign_out: 'logout',
+    password: 'senha'
+  }
+
+  # 2 RECURSOS DO SISTEMA (scaffolds)
   #get "sessions/new"
   resources :movimentacao_estoques
   resources :compras
@@ -25,7 +36,8 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  # 3 PÁGINA INICIAL DO SISTEMA
   # Defines the root path route ("/")
   # root "posts#index"
-  root "sessions#new"
+  root "vendas#index"
 end

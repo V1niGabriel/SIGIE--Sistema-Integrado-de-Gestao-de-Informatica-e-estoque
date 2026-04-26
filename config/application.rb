@@ -23,5 +23,8 @@ module SigieSistemaIntegradoDeGestaoDeInformaticaEEstoque
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    # Define o idioma padrão como português do Brasil
+    config.i18n.default_locale = :"pt-BR"
+    config.time_zone = "Brasilia"
   end
 end
