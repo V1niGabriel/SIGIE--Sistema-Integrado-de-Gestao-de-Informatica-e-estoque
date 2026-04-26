@@ -1,12 +1,10 @@
-<% content_for :title, "Editing cliente" %>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Editar Cliente</h1>
+    <%= link_to "← Voltar para Clientes", clientes_path, class: "btn-secondary" %>
+  </div>
 
-<h1>Editing cliente</h1>
-
-<%= render "form", cliente: @cliente %>
-
-<br>
-
-<div>
-  <%= link_to "Show this cliente", @cliente %> |
-  <%= link_to "Back to clientes", clientes_path %>
+  <div class="card">
+    <%= render "form", cliente: @cliente %>
+  </div>
 </div>

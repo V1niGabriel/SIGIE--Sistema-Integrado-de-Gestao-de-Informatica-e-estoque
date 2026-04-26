@@ -4,7 +4,7 @@ class VendasController < ApplicationController
 
   # GET /vendas or /vendas.json
   def index
-    @vendas = Venda.all
+    @vendas = Venda.includes(:cliente, :funcionario).order(data_venda: :desc)
   end
 
   # GET /vendas/1 or /vendas/1.json

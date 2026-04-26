@@ -1,11 +1,10 @@
-<% content_for :title, "New item" %>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Adicionar Novo Produto</h1>
+    <%= link_to "← Voltar para Estoque", itens_path, class: "btn-secondary" %>
+  </div>
 
-<h1>New item</h1>
-
-<%= render "form", item: @item %>
-
-<br>
-
-<div>
-  <%= link_to "Back to itens", itens_path %>
+  <div class="card">
+    <%= render "form", item: @item %>
+  </div>
 </div>

@@ -1,10 +1,37 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Ficha do Cliente</h1>
+    <div style="display: flex; gap: 10px;">
+      <%= link_to "← Voltar", clientes_path, class: "btn-secondary" %>
+      <%= link_to "Editar Cliente", edit_cliente_path(@cliente), class: "btn-primary" %>
+    </div>
+  </div>
 
-<%= render @cliente %>
+  <div class="card detail-card">
+    <div style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e5e7eb;">
+      <h2 style="margin: 0 0 10px 0; color: #1f2937; font-size: 1.5rem;"><%= @cliente.nome_razao_social %></h2>
+      <span class="badge-stock" style="background-color: #e0e7ff; color: #3730a3;">Cliente Ativo</span>
+    </div>
 
-<div>
-  <%= link_to "Edit this cliente", edit_cliente_path(@cliente) %> |
-  <%= link_to "Back to clientes", clientes_path %>
+    <div class="detail-grid">
+      <div class="detail-item">
+        <span class="detail-label">Documento (CPF/CNPJ)</span>
+        <span class="detail-value"><%= @cliente.cpf_cnpj %></span>
+      </div>
 
-  <%= button_to "Destroy this cliente", @cliente, method: :delete %>
+      <div class="detail-item">
+        <span class="detail-label">E-mail</span>
+        <span class="detail-value"><%= @cliente.email %></span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Telefone de Contato</span>
+        <span class="detail-value"><%= @cliente.telefone %></span>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px; text-align: right;">
+      <%= button_to "Excluir Cliente", @cliente, method: :delete, data: { turbo_confirm: "Tem certeza que deseja remover este cliente? Se ele possuir compras associadas, ocorrerá um erro." }, class: "btn-secondary", style: "color: #ef4444; border-color: #fca5a5;" %>
+    </div>
+  </div>
 </div>

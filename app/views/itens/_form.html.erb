@@ -1,9 +1,8 @@
-<%= form_with(model: item) do |form| %>
+<%= form_with(model: item, class: "form-content") do |form| %>
   <% if item.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(item.errors.count, "error") %> prohibited this item from being saved:</h2>
-
-      <ul>
+    <div style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <strong>Não foi possível salvar:</strong>
+      <ul style="margin-top: 10px; margin-bottom: 0;">
         <% item.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,47 +10,52 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :fornecedor_id, style: "display: block" %>
-    <%= form.text_field :fornecedor_id %>
+  <div class="form-grid full">
+    <div>
+      <%= form.label :descricao, "Descrição do Produto", class: "form-label" %>
+      <%= form.text_field :descricao, class: "form-input", placeholder: "Ex: Teclado Mecânico RGB", required: true %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :categoria_id, style: "display: block" %>
-    <%= form.text_field :categoria_id %>
+  <div class="form-grid">
+    <div>
+      <%= form.label :categoria_id, "Categoria", class: "form-label" %>
+      <%= form.collection_select :categoria_id, Categoria.all, :id, :nome_categoria, { prompt: "Selecione uma Categoria..." }, { class: "form-input", required: true } %>
+    </div>
+
+    <div>
+      <%= form.label :fabricante_id, "Fabricante", class: "form-label" %>
+      <%= form.collection_select :fabricante_id, Fabricante.all, :id, :nome_marca, { prompt: "Selecione um Fabricante..." }, { class: "form-input", required: true } %>
+    </div>
+
+    <div>
+      <%= form.label :fornecedor_id, "Fornecedor", class: "form-label" %>
+      <%= form.collection_select :fornecedor_id, Fornecedor.all, :id, :nome, { prompt: "Selecione um Fornecedor..." }, { class: "form-input", required: true } %>
+    </div>
+
+    <div>
+      <%= form.label :ncm, "Código NCM (Fiscal)", class: "form-label" %>
+      <%= form.text_field :ncm, class: "form-input", placeholder: "Ex: 84716052", maxlength: 8 %>
+    </div>
+
+    <div>
+      <%= form.label :preco_custo, "Preço de Custo (R$)", class: "form-label" %>
+      <%= form.number_field :preco_custo, class: "form-input", step: "0.01", min: "0", required: true %>
+    </div>
+
+    <div>
+      <%= form.label :preco_venda, "Preço de Venda (R$)", class: "form-label" %>
+      <%= form.number_field :preco_venda, class: "form-input", step: "0.01", min: "0", required: true %>
+    </div>
+
+    <div>
+      <%= form.label :quantidade_estoque, "Quantidade Inicial em Estoque", class: "form-label" %>
+      <%= form.number_field :quantidade_estoque, class: "form-input", min: "0", required: true %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :fabricante_id, style: "display: block" %>
-    <%= form.text_field :fabricante_id %>
-  </div>
-
-  <div>
-    <%= form.label :descricao, style: "display: block" %>
-    <%= form.text_field :descricao %>
-  </div>
-
-  <div>
-    <%= form.label :quantidade_estoque, style: "display: block" %>
-    <%= form.number_field :quantidade_estoque %>
-  </div>
-
-  <div>
-    <%= form.label :preco_custo, style: "display: block" %>
-    <%= form.text_field :preco_custo %>
-  </div>
-
-  <div>
-    <%= form.label :preco_venda, style: "display: block" %>
-    <%= form.text_field :preco_venda %>
-  </div>
-
-  <div>
-    <%= form.label :ncm, style: "display: block" %>
-    <%= form.text_field :ncm %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+  <div class="form-actions">
+    <%= link_to "Cancelar", itens_path, class: "btn-secondary" %>
+    <%= form.submit "Salvar Produto", class: "btn-primary" %>
   </div>
 <% end %>

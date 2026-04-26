@@ -11,34 +11,77 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon_logo.png" type="image/png">
     <link rel="icon" href="/icon_logo.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-  <%# Este bloco só aparece se o usuário estiver logado %>
     <% if funcionario_signed_in? %>
-      <div style="background-color: #3e32a8; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; margin-bottom: 20px;">
+      <div class="app-layout">
         
-        <div>
-          <strong>SIGIE</strong> | Logado como: <%= current_funcionario.nome %> (<%= current_funcionario.cargo.titulo %>)
-        </div>
+        <aside class="sidebar">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo">
+              <%= image_tag "Logo_SIGIE-transparente.png", alt: "Logo SIGIE" %>
+            </div>
+          </div>
 
-        <div>
-          <%# O botão de Sair exige o método DELETE %>
-          <%= button_to "Sair", destroy_funcionario_session_path, method: :delete, style: "background-color: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold;" %>
+          <nav class="sidebar-nav">
+            <div class="nav-group">
+              <div class="nav-title">Principal</div>
+              <%= link_to "Início / Vendas", root_path, class: "nav-link" %>
+              <%= link_to "Orçamentos", orcamentos_path, class: "nav-link" %>
+            </div>
+
+            <div class="nav-group">
+              <div class="nav-title">Cadastros</div>
+              <%= link_to "Clientes", clientes_path, class: "nav-link" %>
+              <%= link_to "Estoque (Itens)", itens_path, class: "nav-link" %>
+            </div>
+
+            <div class="nav-group">
+              <div class="nav-title">Gestão de Compras</div>
+              <%= link_to "Compras", compras_path, class: "nav-link" %>
+              <%= link_to "Fornecedores", fornecedores_path, class: "nav-link" %>
+              <%= link_to "Fabricantes", fabricantes_path, class: "nav-link" %>
+              <%= link_to "Categorias", categorias_path, class: "nav-link" %>
+            </div>
+
+            <div class="nav-group">
+              <div class="nav-title">Administração</div>
+              <%= link_to "Mov. de Estoque", movimentacao_estoques_path, class: "nav-link" %>
+              <%= link_to "Funcionários", funcionarios_path, class: "nav-link" %>
+              <%= link_to "Cargos", cargos_path, class: "nav-link" %>
+              <%= link_to "Dados da Empresa", dados_empresas_path, class: "nav-link" %>
+            </div>
+          </nav>
+        </aside>
+
+        <div class="main-content-wrapper">
+          
+          <header class="topbar">
+            <div class="user-profile">
+              <div class="user-info">
+                <div class="user-name"><%= current_funcionario.nome %></div>
+                <div class="user-role"><%= current_funcionario.cargo.titulo %></div>
+              </div>
+              <%= button_to "Sair", destroy_funcionario_session_path, method: :delete, class: "btn-logout" %>
+            </div>
+          </header>
+
+          <main style="flex: 1; overflow-y: auto;">
+            <%= yield %>
+          </main>
+          
         </div>
-        
       </div>
+
+    <% else %>
+      <%= yield %>
     <% end %>
-    <%= yield %>
   </body>
 </html>

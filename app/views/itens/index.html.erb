@@ -1,16 +1,45 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
+  
+  <div class="page-header">
+    <h1 class="page-title">Estoque de Produtos</h1>
+    <%= link_to "+ Adicionar Novo Item", new_item_path, class: "btn-primary" %>
+  </div>
 
-<% content_for :title, "Itens" %>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Descrição do Produto</th>
+          <th>Categoria</th>
+          <th>Fabricante</th>
+          <th>Preço de Venda</th>
+          <th>Qtd. Estoque</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @itens.each do |item| %>
+          <tr>
+            <td><strong><%= item.descricao %></strong></td>
+            <td><%= item.categoria.nome_categoria %></td>
+            <td><%= item.fabricante.nome_marca %></td>
+            
+            <td><%= number_to_currency(item.preco_venda, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+            
+            <td>
+              <span class="badge-stock <%= 'low' if item.quantidade_estoque <= 5 %>">
+                <%= item.quantidade_estoque %> un.
+              </span>
+            </td>
+            
+            <td class="action-links">
+              <%= link_to "Ver Detalhes", item %>
+              <%= link_to "Editar", edit_item_path(item) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 
-<h1>Itens</h1>
-
-<div id="itens">
-  <% @itens.each do |item| %>
-    <%= render item %>
-    <p>
-      <%= link_to "Show this item", item %>
-    </p>
-  <% end %>
 </div>
-
-<%= link_to "New item", new_item_path %>

@@ -1,0 +1,25 @@
+/* --- BADGES DE STATUS (VENDAS E ORÇAMENTOS) --- */
+.badge-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+  text-transform: capitalize; /* Deixa a primeira letra maiúscula automaticamente */
+}
+
+/*classe para cada status mapeado no banco de dados */
+.status-pendente {
+  background-color: #fef3c7; /* Amarelo clarinho */
+  color: #d97706;            /* Laranja escuro */
+}
+
+.status-pago {
+  background-color: #d1fae5; /* Verde clarinho */
+  color: #065f46;            /* Verde escuro */
+}
+
+.status-cancelado {
+  background-color: #fee2e2; /* Vermelho clarinho */
+  color: #991b1b;            /* Vermelho escuro */
+}

@@ -1,16 +1,51 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
+  
+  <div class="page-header">
+    <h1 class="page-title">Histórico de Vendas</h1>
+    <%= link_to "+ Registrar Nova Venda", new_venda_path, class: "btn-primary" %>
+  </div>
 
-<% content_for :title, "Vendas" %>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Data da Venda</th>
+          <th>Cliente</th>
+          <th>Vendedor</th>
+          <th>Status do Pagamento</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @vendas.any? %>
+          <% @vendas.each do |venda| %>
+            <tr>
+              <td><strong><%= venda.data_venda.strftime("%d/%m/%Y") %></strong></td>
+              
+              <td><%= venda.cliente.nome_razao_social %></td>
+              <td><%= venda.funcionario.nome %></td>
+              
+              <td>
+                <span class="badge-status status-<%= venda.status_pagamento %>">
+                  <%= venda.status_pagamento %>
+                </span>
+              </td>
+              
+              <td class="action-links">
+                <%= link_to "Ver Detalhes", venda %>
+                <%= link_to "Editar", edit_venda_path(venda) %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 40px; color: #6b7280;">
+              Nenhuma venda registrada ainda. Clique no botão acima para começar!
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 
-<h1>Vendas</h1>
-
-<div id="vendas">
-  <% @vendas.each do |venda| %>
-    <%= render venda %>
-    <p>
-      <%= link_to "Show this venda", venda %>
-    </p>
-  <% end %>
 </div>
-
-<%= link_to "New venda", new_venda_path %>

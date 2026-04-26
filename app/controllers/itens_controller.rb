@@ -3,7 +3,9 @@ class ItensController < ApplicationController
 
   # GET /itens or /itens.json
   def index
-    @itens = Item.all
+    #@itens = Item.all
+    # O .includes puxa os dados relacionados de uma só vez, deixando a tela super rápida
+    @itens = Item.includes(:categoria, :fabricante, :fornecedor).all
   end
 
   # GET /itens/1 or /itens/1.json

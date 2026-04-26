@@ -1,10 +1,54 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Detalhes do Produto</h1>
+    <div style="display: flex; gap: 10px;">
+      <%= link_to "← Voltar", itens_path, class: "btn-secondary" %>
+      <%= link_to "Editar Produto", edit_item_path(@item), class: "btn-primary" %>
+    </div>
+  </div>
 
-<%= render @item %>
+  <div class="card detail-card">
+    <div style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e5e7eb;">
+      <h2 style="margin: 0 0 10px 0; color: #1f2937; font-size: 1.5rem;"><%= @item.descricao %></h2>
+      <span class="badge-stock <%= 'low' if @item.quantidade_estoque <= 5 %>">
+        Estoque Atual: <%= @item.quantidade_estoque %> unidades
+      </span>
+    </div>
 
-<div>
-  <%= link_to "Edit this item", edit_item_path(@item) %> |
-  <%= link_to "Back to itens", itens_path %>
+    <div class="detail-grid">
+      <div class="detail-item">
+        <span class="detail-label">Categoria</span>
+        <span class="detail-value"><%= @item.categoria.nome_categoria %></span>
+      </div>
 
-  <%= button_to "Destroy this item", @item, method: :delete %>
+      <div class="detail-item">
+        <span class="detail-label">Fabricante</span>
+        <span class="detail-value"><%= @item.fabricante.nome_marca %></span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Fornecedor</span>
+        <span class="detail-value"><%= @item.fornecedor.nome %></span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Código NCM</span>
+        <span class="detail-value"><%= @item.ncm.present? ? @item.ncm : "Não informado" %></span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Preço de Custo</span>
+        <span class="detail-value"><%= number_to_currency(@item.preco_custo, unit: "R$ ", separator: ",", delimiter: ".") %></span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Preço de Venda</span>
+        <span class="detail-value" style="color: #059669;"><%= number_to_currency(@item.preco_venda, unit: "R$ ", separator: ",", delimiter: ".") %></span>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px; text-align: right;">
+      <%= button_to "Excluir este Produto", @item, method: :delete, data: { turbo_confirm: "Tem certeza que deseja apagar este produto do estoque?" }, class: "btn-secondary", style: "color: #ef4444; border-color: #fca5a5;" %>
+    </div>
+  </div>
 </div>

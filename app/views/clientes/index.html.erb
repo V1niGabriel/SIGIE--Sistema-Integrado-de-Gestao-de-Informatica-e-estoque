@@ -1,16 +1,36 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
+  
+  <div class="page-header">
+    <h1 class="page-title">Cadastro de Clientes</h1>
+    <%= link_to "+ Adicionar Novo Cliente", new_cliente_path, class: "btn-primary" %>
+  </div>
 
-<% content_for :title, "Clientes" %>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nome / Razão Social</th>
+          <th>CPF / CNPJ</th>
+          <th>E-mail</th>
+          <th>Telefone</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @clientes.each do |cliente| %>
+          <tr>
+            <td><strong><%= cliente.nome_razao_social %></strong></td>
+            <td><%= cliente.cpf_cnpj %></td>
+            <td><%= cliente.email %></td>
+            <td><%= cliente.telefone %></td>
+            <td class="action-links">
+              <%= link_to "Ver Detalhes", cliente %>
+              <%= link_to "Editar", edit_cliente_path(cliente) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 
-<h1>Clientes</h1>
-
-<div id="clientes">
-  <% @clientes.each do |cliente| %>
-    <%= render cliente %>
-    <p>
-      <%= link_to "Show this cliente", cliente %>
-    </p>
-  <% end %>
 </div>
-
-<%= link_to "New cliente", new_cliente_path %>
