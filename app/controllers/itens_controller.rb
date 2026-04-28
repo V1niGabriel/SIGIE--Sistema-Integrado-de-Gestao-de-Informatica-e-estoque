@@ -1,4 +1,5 @@
 class ItensController < ApplicationController
+  before_action :authenticate_funcionario!
   before_action :set_item, only: %i[ show edit update destroy ]
 
   # GET /itens or /itens.json

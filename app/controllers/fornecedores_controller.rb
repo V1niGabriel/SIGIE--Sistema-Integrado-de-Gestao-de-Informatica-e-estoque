@@ -1,4 +1,5 @@
 class FornecedoresController < ApplicationController
+  before_action :authenticate_funcionario!
   before_action :set_fornecedor, only: %i[ show edit update destroy ]
 
   # GET /fornecedores or /fornecedores.json

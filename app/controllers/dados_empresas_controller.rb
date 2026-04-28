@@ -1,4 +1,5 @@
 class DadosEmpresasController < ApplicationController
+  before_action :authenticate_funcionario!
   before_action :set_dados_empresa, only: %i[ show edit update destroy ]
 
   # GET /dados_empresas or /dados_empresas.json

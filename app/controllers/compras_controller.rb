@@ -1,4 +1,5 @@
 class ComprasController < ApplicationController
+  before_action :authenticate_funcionario!
   before_action :set_compra, only: %i[ show edit update destroy ]
 
   # GET /compras or /compras.json

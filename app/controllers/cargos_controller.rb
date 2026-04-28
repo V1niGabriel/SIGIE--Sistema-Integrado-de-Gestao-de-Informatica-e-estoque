@@ -1,4 +1,5 @@
 class CargosController < ApplicationController
+  before_action :authenticate_funcionario!
   before_action :set_cargo, only: %i[ show edit update destroy ]
 
   # GET /cargos or /cargos.json

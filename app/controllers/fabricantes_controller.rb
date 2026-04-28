@@ -1,4 +1,5 @@
 class FabricantesController < ApplicationController
+  before_action :authenticate_funcionario!
   before_action :set_fabricante, only: %i[ show edit update destroy ]
 
   # GET /fabricantes or /fabricantes.json

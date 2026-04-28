@@ -1,23 +1,28 @@
 <div class="login-page-wrapper">
-  <div class="left-panel">
+  <div class="left-panel" data-controller="carrossel">
     <div class="top-section">
       <%= link_to "O que há de novo?", "#", class: "whats-new-btn" %>
     </div>
 
     <div class="middle-section">
       <div class="image-placeholder">
-        <span class="imagem-placeholder-plot1">
-          <%= image_tag "Portal-do-Sistema.png", alt: "Imagem ilustrativa do sistema" %>
+        <span class="slide active" data-carrossel-target="slide">
+          <%= image_tag "Portal-do-Sistema.png", alt: "Sistema Tela 1" %>
+        </span>
+        <span class="slide" data-carrossel-target="slide">
+          <%= image_tag "Portal-do-Sistema-2.png", alt: "Sistema Tela 2" %>
+        </span>
+        <span class="slide" data-carrossel-target="slide">
+          <%= image_tag "Portal-do-Sistema-3.png", alt: "Sistema Tela 3" %>
         </span>
       </div>
     </div>
 
     <div class="bottom-section">
       <div class="pagination-lines">
-        <div class="line"></div>
-        <div class="line"></div>
-        <div class="line active"></div>
-        <div class="line"></div>
+        <div class="line active" data-carrossel-target="line" data-action="click->carrossel#goToSlide" data-carrossel-index-param="0"></div>
+        <div class="line" data-carrossel-target="line" data-action="click->carrossel#goToSlide" data-carrossel-index-param="1"></div>
+        <div class="line" data-carrossel-target="line" data-action="click->carrossel#goToSlide" data-carrossel-index-param="2"></div>
       </div>
     </div>
   </div>

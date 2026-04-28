@@ -1,4 +1,5 @@
 class MovimentacaoEstoquesController < ApplicationController
+  before_action :authenticate_funcionario!
   before_action :set_movimentacao_estoque, only: %i[ show edit update destroy ]
 
   # GET /movimentacao_estoques or /movimentacao_estoques.json
