@@ -1,9 +1,14 @@
-<%= form_with(model: orcamento) do |form| %>
-  <% if orcamento.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(orcamento.errors.count, "error") %> prohibited this orcamento from being saved:</h2>
+<%= form_with(model: orcamento,
+              data: {
+                controller: "orcamento",
+                "orcamento-items-value": @itens.map { |i| { id: i.id, preco: i.preco_venda.to_f } }.to_json
+              },
+              class: "form-content") do |form| %>
 
-      <ul>
+  <% if orcamento.errors.any? %>
+    <div style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <strong>Não foi possível salvar:</strong>
+      <ul style="margin-top: 10px; margin-bottom: 0;">
         <% orcamento.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,27 +16,131 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :cliente_id, style: "display: block" %>
-    <%= form.text_field :cliente_id %>
+  <%# ---- Seção 1: Cabeçalho ---- %>
+  <div class="form-section-title">Informações do Orçamento</div>
+  <div class="form-grid">
+    <div>
+      <%= form.label :cliente_id, "Cliente", class: "form-label" %>
+      <%= form.collection_select :cliente_id, @clientes, :id, :nome_razao_social,
+            { prompt: "Selecione um cliente..." },
+            { class: "form-input", required: true } %>
+    </div>
+
+    <div>
+      <%= form.label :funcionario_id, "Vendedor", class: "form-label" %>
+      <%= form.collection_select :funcionario_id, @funcionarios, :id, :nome,
+            { prompt: "Selecione um vendedor..." },
+            { class: "form-input", required: true } %>
+    </div>
+
+    <div>
+      <%= form.label :data_validade, "Válido até", class: "form-label" %>
+      <%= form.date_field :data_validade, class: "form-input", required: true %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :funcionario_id, style: "display: block" %>
-    <%= form.text_field :funcionario_id %>
+  <%# ---- Seção 2: Carrinho de Itens ---- %>
+  <div class="form-section-title" style="margin-top: 30px;">Itens do Orçamento</div>
+  <div class="cart-wrapper">
+    <div class="cart-add-bar">
+      <button type="button" class="btn-primary btn-sm" data-action="click->orcamento#addItem">
+        + Adicionar Item
+      </button>
+    </div>
+
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th class="cart-col-num">Qtd.</th>
+          <th class="cart-col-num">Preço Unit.</th>
+          <th class="cart-col-num">Subtotal</th>
+          <th class="cart-col-action"></th>
+        </tr>
+      </thead>
+      <tbody data-orcamento-target="itemsBody">
+        <% opcoes_itens = @itens.map { |i| ["#{i.descricao}#{i.quantidade_estoque == 0 ? ' (sem estoque)' : ''}", i.id] }
+           ids_sem_estoque = @itens.select { |i| i.quantidade_estoque == 0 }.map(&:id) %>
+        <% orcamento.itens_orcamento.each do |item_orc| %>
+          <%= form.fields_for :itens_orcamento, item_orc do |io| %>
+            <tr class="cart-row">
+              <td>
+                <%= io.select :item_id,
+                      options_for_select(opcoes_itens, selected: item_orc.item_id, disabled: ids_sem_estoque),
+                      { prompt: "Selecione um produto..." },
+                      { class: "form-input cart-select", data: { action: "change->orcamento#onItemSelect" } } %>
+              </td>
+              <td>
+                <%= io.number_field :quantidade, value: item_orc.quantidade || 1, min: 1,
+                      class: "form-input cart-input",
+                      data: { action: "input->orcamento#updateSubtotal" } %>
+              </td>
+              <td>
+                <%= io.number_field :preco_unitario, value: item_orc.preco_unitario,
+                      step: "0.01", min: "0",
+                      class: "form-input cart-input cart-price",
+                      readonly: true %>
+              </td>
+              <td class="cart-subtotal">
+                <% subtotal = (item_orc.quantidade || 0) * (item_orc.preco_unitario || 0) %>
+                <%= number_to_currency(subtotal, unit: "R$ ", separator: ",", delimiter: ".") %>
+              </td>
+              <td class="cart-col-action">
+                <%= io.hidden_field :_destroy, value: false %>
+                <button type="button" class="btn-remove-item" data-action="click->orcamento#removeItem" title="Remover">✕</button>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="cart-total-bar">
+      <span class="cart-total-label">Total do Orçamento</span>
+      <span class="cart-total-value" data-orcamento-target="total">R$ 0,00</span>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :data_orcamento, style: "display: block" %>
-    <%= form.datetime_field :data_orcamento %>
-  </div>
+  <%# ---- Template para novas linhas ---- %>
+  <template data-orcamento-target="rowTemplate">
+    <tr class="cart-row">
+      <td>
+        <select name="orcamento[itens_orcamento_attributes][NEW_RECORD][item_id]"
+                class="form-input cart-select"
+                data-action="change->orcamento#onItemSelect">
+          <option value="">Selecione um produto...</option>
+          <% @itens.each do |item| %>
+            <option value="<%= item.id %>"
+                    <%= 'disabled' if item.quantidade_estoque == 0 %>
+                    style="<%= 'color: #9ca3af; background-color: #f3f4f6;' if item.quantidade_estoque == 0 %>">
+              <%= item.descricao %><%= ' (sem estoque)' if item.quantidade_estoque == 0 %>
+            </option>
+          <% end %>
+        </select>
+      </td>
+      <td>
+        <input type="number"
+               name="orcamento[itens_orcamento_attributes][NEW_RECORD][quantidade]"
+               value="1" min="1"
+               class="form-input cart-input"
+               data-action="input->orcamento#updateSubtotal" />
+      </td>
+      <td>
+        <input type="number"
+               name="orcamento[itens_orcamento_attributes][NEW_RECORD][preco_unitario]"
+               step="0.01" min="0" value="0.00"
+               class="form-input cart-input cart-price"
+               readonly />
+      </td>
+      <td class="cart-subtotal">R$ 0,00</td>
+      <td class="cart-col-action">
+        <button type="button" class="btn-remove-item" data-action="click->orcamento#removeItem" title="Remover">✕</button>
+      </td>
+    </tr>
+  </template>
 
-  <div>
-    <%= form.label :data_validade, style: "display: block" %>
-    <%= form.datetime_field :data_validade %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+  <div class="form-actions">
+    <%= link_to "Cancelar", orcamentos_path, class: "btn-secondary" %>
+    <%= form.submit orcamento.persisted? ? "Salvar Alterações" : "Registrar Orçamento", class: "btn-primary" %>
   </div>
 <% end %>

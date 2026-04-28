@@ -1,12 +1,9 @@
-<% content_for :title, "Editing orcamento" %>
-
-<h1>Editing orcamento</h1>
-
-<%= render "form", orcamento: @orcamento %>
-
-<br>
-
-<div>
-  <%= link_to "Show this orcamento", @orcamento %> |
-  <%= link_to "Back to orcamentos", orcamentos_path %>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Editar Orçamento</h1>
+    <%= link_to "← Voltar", orcamentos_path, class: "btn-secondary" %>
+  </div>
+  <div class="card">
+    <%= render "form", orcamento: @orcamento %>
+  </div>
 </div>

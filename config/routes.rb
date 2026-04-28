@@ -18,7 +18,9 @@ Rails.application.routes.draw do
   resources :fabricantes
   resources :categorias
   resources :clientes
-  resources :orcamentos
+  resources :orcamentos do
+    collection { get :por_cliente }
+  end
   resources :vendas
   resources :cargos
   resources :funcionarios

@@ -1,11 +1,10 @@
-<% content_for :title, "New venda" %>
+<div class="dashboard-container" data-controller="venda"
+     data-venda-items-value="<%= @itens.map { |i| { id: i.id, preco: i.preco_venda.to_f, estoque: i.quantidade_estoque } }.to_json %>">
+  <div class="page-header">
+    <h1 class="page-title">Registrar Nova Venda</h1>
+  </div>
 
-<h1>New venda</h1>
-
-<%= render "form", venda: @venda %>
-
-<br>
-
-<div>
-  <%= link_to "Back to vendas", vendas_path %>
+  <div class="card">
+    <%= render "form", venda: @venda %>
+  </div>
 </div>

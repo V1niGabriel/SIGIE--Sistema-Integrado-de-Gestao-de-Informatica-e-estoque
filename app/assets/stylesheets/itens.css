@@ -43,6 +43,22 @@ body {
   background-color: #2b237c;
 }
 
+.btn-danger {
+  background-color: #dc2626;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
 /* Cartão branco onde a tabela vai ficar */
 .card {
   background-color: #fcfcfc;

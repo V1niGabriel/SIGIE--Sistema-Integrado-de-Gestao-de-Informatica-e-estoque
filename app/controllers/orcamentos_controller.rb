@@ -1,70 +1,94 @@
 class OrcamentosController < ApplicationController
+  before_action :authenticate_funcionario!
   before_action :set_orcamento, only: %i[ show edit update destroy ]
+  before_action :load_collections, only: %i[ new edit create update ]
 
-  # GET /orcamentos or /orcamentos.json
   def index
-    @orcamentos = Orcamento.all
+    @orcamentos = Orcamento.includes(:cliente, :funcionario).order(data_orcamento: :desc)
   end
 
-  # GET /orcamentos/1 or /orcamentos/1.json
   def show
+    @itens_orcamento = @orcamento.itens_orcamento.includes(:item)
+    @total = @itens_orcamento.sum { |io| io.quantidade * io.preco_unitario }
   end
 
-  # GET /orcamentos/new
   def new
-    @orcamento = Orcamento.new
+    @orcamento = Orcamento.new(funcionario_id: current_funcionario.id, data_validade: Date.today + 3)
+    @orcamento.itens_orcamento.build
   end
 
-  # GET /orcamentos/1/edit
   def edit
   end
 
-  # POST /orcamentos or /orcamentos.json
   def create
     @orcamento = Orcamento.new(orcamento_params)
+    @orcamento.data_orcamento = Time.current
 
     respond_to do |format|
       if @orcamento.save
-        format.html { redirect_to @orcamento, notice: "Orcamento was successfully created." }
-        format.json { render :show, status: :created, location: @orcamento }
+        format.html { redirect_to @orcamento, notice: "Orçamento registrado com sucesso." }
       else
         format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @orcamento.errors, status: :unprocessable_entity }
       end
     end
   end
 
-  # PATCH/PUT /orcamentos/1 or /orcamentos/1.json
   def update
     respond_to do |format|
       if @orcamento.update(orcamento_params)
-        format.html { redirect_to @orcamento, notice: "Orcamento was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @orcamento }
+        format.html { redirect_to @orcamento, notice: "Orçamento atualizado com sucesso.", status: :see_other }
       else
         format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @orcamento.errors, status: :unprocessable_entity }
       end
     end
   end
 
-  # DELETE /orcamentos/1 or /orcamentos/1.json
   def destroy
     @orcamento.destroy!
-
     respond_to do |format|
-      format.html { redirect_to orcamentos_path, notice: "Orcamento was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+      format.html { redirect_to orcamentos_path, notice: "Orçamento excluído.", status: :see_other }
     end
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_orcamento
-      @orcamento = Orcamento.find(params.expect(:id))
-    end
+  def por_cliente
+    orcamentos = Orcamento.where(cliente_id: params[:cliente_id])
+                          .includes(itens_orcamento: :item)
+                          .order(data_orcamento: :desc)
 
-    # Only allow a list of trusted parameters through.
-    def orcamento_params
-      params.expect(orcamento: [ :cliente_id, :funcionario_id, :data_orcamento, :data_validade ])
-    end
+    render json: orcamentos.map { |o|
+      {
+        id: o.id,
+        cliente_id: o.cliente_id,
+        data: o.data_orcamento.strftime("%d/%m/%Y"),
+        data_validade: o.data_validade.strftime("%d/%m/%Y"),
+        itens: o.itens_orcamento.map { |io|
+          {
+            item_id: io.item_id,
+            descricao: io.item.descricao,
+            quantidade: io.quantidade,
+            preco_unitario: io.preco_unitario.to_f
+          }
+        }
+      }
+    }
+  end
+
+  private
+
+  def set_orcamento
+    @orcamento = Orcamento.find(params[:id])
+  end
+
+  def load_collections
+    @clientes = Cliente.order(:nome_razao_social)
+    @funcionarios = Funcionario.order(:nome)
+    @itens = Item.order(:descricao)
+  end
+
+  def orcamento_params
+    params.require(:orcamento).permit(
+      :cliente_id, :funcionario_id, :data_validade,
+      itens_orcamento_attributes: [ :id, :item_id, :quantidade, :preco_unitario, :_destroy ]
+    )
+  end
 end

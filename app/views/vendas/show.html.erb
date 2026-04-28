@@ -1,10 +1,91 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
 
-<%= render @venda %>
+  <div class="page-header">
+    <h1 class="page-title">Detalhes da Venda #<%= @venda.id %></h1>
+    <div style="display: flex; gap: 10px;">
+      <%= link_to "Editar", edit_venda_path(@venda), class: "btn-secondary" %>
+      <%= link_to "← Voltar", vendas_path, class: "btn-secondary" %>
+    </div>
+  </div>
 
-<div>
-  <%= link_to "Edit this venda", edit_venda_path(@venda) %> |
-  <%= link_to "Back to vendas", vendas_path %>
+  <% if notice %>
+    <div style="background: #d1fae5; color: #065f46; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: 500;">
+      <%= notice %>
+    </div>
+  <% end %>
 
-  <%= button_to "Destroy this venda", @venda, method: :delete %>
+  <%# ---- Cabeçalho da venda ---- %>
+  <div class="card">
+    <div class="venda-info-bar">
+      <div class="venda-info-item">
+        <span class="detail-label">Cliente</span>
+        <span class="detail-value"><%= @venda.cliente.nome_razao_social %></span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Vendedor</span>
+        <span class="detail-value"><%= @venda.funcionario.nome %></span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Data da Venda</span>
+        <span class="detail-value"><%= @venda.data_venda.strftime("%d/%m/%Y às %H:%M") %></span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Status do Pagamento</span>
+        <span class="badge-status status-<%= @venda.status_pagamento %>">
+          <%= @venda.status_pagamento.capitalize %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <%# ---- Itens da venda ---- %>
+  <div class="form-section-title" style="margin-top: 30px;">Itens da Venda</div>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th style="text-align: right;">Qtd.</th>
+          <th style="text-align: right;">Preço Unit.</th>
+          <th style="text-align: right;">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @itens_venda.any? %>
+          <% @itens_venda.each do |iv| %>
+            <tr>
+              <td><strong><%= iv.item.descricao %></strong></td>
+              <td style="text-align: right;"><%= iv.quantidade %></td>
+              <td style="text-align: right;"><%= number_to_currency(iv.preco_unitario, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+              <td style="text-align: right; font-weight: 600;">
+                <%= number_to_currency(iv.quantidade * iv.preco_unitario, unit: "R$ ", separator: ",", delimiter: ".") %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 30px; color: #6b7280;">
+              Nenhum item registrado nesta venda.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="cart-total-bar">
+      <span class="cart-total-label">Total da Venda</span>
+      <span class="cart-total-value"><%= number_to_currency(@total, unit: "R$ ", separator: ",", delimiter: ".") %></span>
+    </div>
+  </div>
+
+  <%# ---- Ações ---- %>
+  <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+    <%= button_to "Excluir Venda", @venda, method: :delete,
+          class: "btn-danger",
+          form: { data: { turbo_confirm: "Tem certeza? Esta ação não pode ser desfeita." } } %>
+  </div>
+
 </div>

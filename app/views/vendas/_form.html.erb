@@ -1,9 +1,9 @@
-<%= form_with(model: venda) do |form| %>
-  <% if venda.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(venda.errors.count, "error") %> prohibited this venda from being saved:</h2>
+<%= form_with(model: venda, class: "form-content") do |form| %>
 
-      <ul>
+  <% if venda.errors.any? %>
+    <div style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <strong>Não foi possível salvar:</strong>
+      <ul style="margin-top: 10px; margin-bottom: 0;">
         <% venda.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,27 +11,166 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :cliente_id, style: "display: block" %>
-    <%= form.text_field :cliente_id %>
+  <%# ---- Seção 1: Cabeçalho da Venda ---- %>
+  <div class="form-section-title">Informações da Venda</div>
+  <div class="form-grid">
+    <div>
+      <%= form.label :cliente_id, "Cliente", class: "form-label" %>
+      <%= form.collection_select :cliente_id, @clientes, :id, :nome_razao_social,
+            { prompt: "Selecione um cliente..." },
+            { class: "form-input", required: true } %>
+    </div>
+
+    <div>
+      <%= form.label :funcionario_id, "Vendedor", class: "form-label" %>
+      <%= form.collection_select :funcionario_id, @funcionarios, :id, :nome,
+            { prompt: "Selecione um vendedor..." },
+            { class: "form-input", required: true } %>
+    </div>
+
+    <div>
+      <%= form.label :status_pagamento, "Status do Pagamento", class: "form-label" %>
+      <%= form.select :status_pagamento,
+            [["Processando", "processando"], ["Pago", "pago"], ["Cancelado", "cancelado"]],
+            {},
+            { class: "form-input" } %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :funcionario_id, style: "display: block" %>
-    <%= form.text_field :funcionario_id %>
+  <%# ---- Seção 2: Carrinho de Itens ---- %>
+  <div class="form-section-title" style="margin-top: 30px;">Itens da Venda</div>
+  <div class="cart-wrapper">
+    <div class="cart-add-bar">
+      <% unless venda.persisted? %>
+        <button type="button" class="btn-secondary btn-sm" data-action="click->venda#openModal">
+          📋 Carregar Orçamento
+        </button>
+      <% end %>
+      <button type="button" class="btn-primary btn-sm" data-action="click->venda#addItem">
+        + Adicionar Item
+      </button>
+    </div>
+
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th class="cart-col-num">Qtd.</th>
+          <th class="cart-col-num">Preço Unit.</th>
+          <th class="cart-col-num">Subtotal</th>
+          <th class="cart-col-action"></th>
+        </tr>
+      </thead>
+      <tbody data-venda-target="itemsBody">
+        <% opcoes_itens = @itens.map { |i| ["#{i.descricao}#{i.quantidade_estoque == 0 ? ' (sem estoque)' : ''}", i.id] }
+           ids_sem_estoque = @itens.select { |i| i.quantidade_estoque == 0 }.map(&:id) %>
+        <% venda.itens_venda.each do |item_venda| %>
+          <%= form.fields_for :itens_venda, item_venda do |iv| %>
+            <tr class="cart-row">
+              <td>
+                <%= iv.select :item_id,
+                      options_for_select(opcoes_itens, selected: item_venda.item_id, disabled: ids_sem_estoque),
+                      { prompt: "Selecione um produto..." },
+                      { class: "form-input cart-select", data: { action: "change->venda#onItemSelect" } } %>
+              </td>
+              <td>
+                <% max_qty = item_venda.persisted? ? (item_venda.item.quantidade_estoque + item_venda.quantidade) : nil %>
+                <%= iv.number_field :quantidade, value: item_venda.quantidade || 1, min: 1, max: max_qty,
+                      class: "form-input cart-input",
+                      data: { action: "input->venda#updateSubtotal" } %>
+              </td>
+              <td>
+                <%= iv.number_field :preco_unitario, value: item_venda.preco_unitario,
+                      step: "0.01", min: "0",
+                      class: "form-input cart-input cart-price",
+                      readonly: true %>
+              </td>
+              <td class="cart-subtotal">
+                <% subtotal = (item_venda.quantidade || 0) * (item_venda.preco_unitario || 0) %>
+                <%= number_to_currency(subtotal, unit: "R$ ", separator: ",", delimiter: ".") %>
+              </td>
+              <td class="cart-col-action">
+                <%= iv.hidden_field :_destroy, value: false %>
+                <button type="button" class="btn-remove-item" data-action="click->venda#removeItem" title="Remover">✕</button>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="cart-total-bar">
+      <span class="cart-total-label">Total da Venda</span>
+      <span class="cart-total-value" data-venda-target="total">R$ 0,00</span>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :data_venda, style: "display: block" %>
-    <%= form.datetime_field :data_venda %>
-  </div>
+  <%# ---- Template para novas linhas ---- %>
+  <template data-venda-target="rowTemplate">
+    <tr class="cart-row">
+      <td>
+        <select name="venda[itens_venda_attributes][NEW_RECORD][item_id]"
+                class="form-input cart-select"
+                data-action="change->venda#onItemSelect">
+          <option value="">Selecione um produto...</option>
+          <% @itens.each do |item| %>
+            <option value="<%= item.id %>"
+                    <%= 'disabled' if item.quantidade_estoque == 0 %>
+                    style="<%= 'color: #9ca3af; background-color: #f3f4f6;' if item.quantidade_estoque == 0 %>">
+              <%= item.descricao %><%= ' (sem estoque)' if item.quantidade_estoque == 0 %>
+            </option>
+          <% end %>
+        </select>
+      </td>
+      <td>
+        <input type="number"
+               name="venda[itens_venda_attributes][NEW_RECORD][quantidade]"
+               value="1" min="1"
+               class="form-input cart-input"
+               data-action="input->venda#updateSubtotal" />
+      </td>
+      <td>
+        <input type="number"
+               name="venda[itens_venda_attributes][NEW_RECORD][preco_unitario]"
+               step="0.01" min="0" value="0.00"
+               class="form-input cart-input cart-price"
+               readonly />
+      </td>
+      <td class="cart-subtotal">R$ 0,00</td>
+      <td class="cart-col-action">
+        <button type="button" class="btn-remove-item" data-action="click->venda#removeItem" title="Remover">✕</button>
+      </td>
+    </tr>
+  </template>
 
-  <div>
-    <%= form.label :status_pagamento, style: "display: block" %>
-    <%= form.number_field :status_pagamento %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+  <div class="form-actions">
+    <%= link_to "Cancelar", vendas_path, class: "btn-secondary" %>
+    <%= form.submit venda.persisted? ? "Salvar Alterações" : "Registrar Venda", class: "btn-primary" %>
   </div>
 <% end %>
+
+<%# ---- Modal de seleção de orçamento (fora do form) ---- %>
+<div class="modal-overlay"
+     data-venda-target="modal"
+     data-action="click->venda#closeModalOnBackdrop"
+     style="display: none;">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title">Carregar Orçamento</h3>
+      <button type="button" class="modal-close" data-action="click->venda#closeModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="form-label">Selecione o cliente</label>
+      <select class="form-input"
+              data-venda-target="modalClienteSelect"
+              data-action="change->venda#onModalClienteChange">
+        <option value="">Selecione um cliente...</option>
+        <% @clientes.each do |c| %>
+          <option value="<%= c.id %>"><%= c.nome_razao_social %></option>
+        <% end %>
+      </select>
+
+      <div data-venda-target="modalOrcamentosContainer" class="modal-orcamentos-list"></div>
+    </div>
+  </div>
+</div>

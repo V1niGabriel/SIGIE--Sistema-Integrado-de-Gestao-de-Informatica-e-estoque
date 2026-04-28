@@ -1,16 +1,50 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
 
-<% content_for :title, "Orcamentos" %>
+  <div class="page-header">
+    <h1 class="page-title">Orçamentos</h1>
+    <%= link_to "+ Novo Orçamento", new_orcamento_path, class: "btn-primary" %>
+  </div>
 
-<h1>Orcamentos</h1>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Cliente</th>
+          <th>Vendedor</th>
+          <th>Validade</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @orcamentos.any? %>
+          <% @orcamentos.each do |o| %>
+            <tr>
+              <td><strong><%= o.data_orcamento.strftime("%d/%m/%Y") %></strong></td>
+              <td><%= o.cliente.nome_razao_social %></td>
+              <td><%= o.funcionario.nome %></td>
+              <td>
+                <% if o.data_validade < Date.today %>
+                  <span style="color: #dc2626; font-weight: 600;"><%= o.data_validade.strftime("%d/%m/%Y") %> (expirado)</span>
+                <% else %>
+                  <%= o.data_validade.strftime("%d/%m/%Y") %>
+                <% end %>
+              </td>
+              <td class="action-links">
+                <%= link_to "Ver Detalhes", o %>
+                <%= link_to "Editar", edit_orcamento_path(o) %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 40px; color: #6b7280;">
+              Nenhum orçamento registrado ainda.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 
-<div id="orcamentos">
-  <% @orcamentos.each do |orcamento| %>
-    <%= render orcamento %>
-    <p>
-      <%= link_to "Show this orcamento", orcamento %>
-    </p>
-  <% end %>
 </div>
-
-<%= link_to "New orcamento", new_orcamento_path %>

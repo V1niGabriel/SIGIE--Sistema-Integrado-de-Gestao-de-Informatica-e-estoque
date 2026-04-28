@@ -1,10 +1,90 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
 
-<%= render @orcamento %>
+  <div class="page-header">
+    <h1 class="page-title">Orçamento #<%= @orcamento.id %></h1>
+    <div style="display: flex; gap: 10px;">
+      <%= link_to "Editar", edit_orcamento_path(@orcamento), class: "btn-secondary" %>
+      <%= link_to "← Voltar", orcamentos_path, class: "btn-secondary" %>
+    </div>
+  </div>
 
-<div>
-  <%= link_to "Edit this orcamento", edit_orcamento_path(@orcamento) %> |
-  <%= link_to "Back to orcamentos", orcamentos_path %>
+  <% if notice %>
+    <div style="background: #d1fae5; color: #065f46; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: 500;">
+      <%= notice %>
+    </div>
+  <% end %>
 
-  <%= button_to "Destroy this orcamento", @orcamento, method: :delete %>
+  <div class="card">
+    <div class="venda-info-bar">
+      <div class="venda-info-item">
+        <span class="detail-label">Cliente</span>
+        <span class="detail-value"><%= @orcamento.cliente.nome_razao_social %></span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Vendedor</span>
+        <span class="detail-value"><%= @orcamento.funcionario.nome %></span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Data do Orçamento</span>
+        <span class="detail-value"><%= @orcamento.data_orcamento.strftime("%d/%m/%Y às %H:%M") %></span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Válido até</span>
+        <% expired = @orcamento.data_validade < Date.today %>
+        <span class="detail-value" style="color: <%= expired ? '#dc2626' : '#1f2937' %>;">
+          <%= @orcamento.data_validade.strftime("%d/%m/%Y") %>
+          <% if expired %><small style="font-size: 0.75rem;"> (expirado)</small><% end %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section-title" style="margin-top: 30px;">Itens do Orçamento</div>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th style="text-align: right;">Qtd.</th>
+          <th style="text-align: right;">Preço Unit.</th>
+          <th style="text-align: right;">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @itens_orcamento.any? %>
+          <% @itens_orcamento.each do |io| %>
+            <tr>
+              <td><strong><%= io.item.descricao %></strong></td>
+              <td style="text-align: right;"><%= io.quantidade %></td>
+              <td style="text-align: right;"><%= number_to_currency(io.preco_unitario, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+              <td style="text-align: right; font-weight: 600;">
+                <%= number_to_currency(io.quantidade * io.preco_unitario, unit: "R$ ", separator: ",", delimiter: ".") %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 30px; color: #6b7280;">
+              Nenhum item registrado neste orçamento.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="cart-total-bar">
+      <span class="cart-total-label">Total do Orçamento</span>
+      <span class="cart-total-value"><%= number_to_currency(@total, unit: "R$ ", separator: ",", delimiter: ".") %></span>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+    <%= button_to "Excluir Orçamento", @orcamento, method: :delete,
+          class: "btn-danger",
+          form: { data: { turbo_confirm: "Tem certeza? Esta ação não pode ser desfeita." } } %>
+  </div>
+
 </div>
