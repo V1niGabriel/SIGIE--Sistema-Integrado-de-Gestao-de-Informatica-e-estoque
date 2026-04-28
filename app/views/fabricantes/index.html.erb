@@ -1,16 +1,34 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Fabricantes e Marcas</h1>
+    <%= link_to "+ Adicionar Fabricante", new_fabricante_path, class: "btn-primary" %>
+  </div>
 
-<% content_for :title, "Fabricantes" %>
-
-<h1>Fabricantes</h1>
-
-<div id="fabricantes">
-  <% @fabricantes.each do |fabricante| %>
-    <%= render fabricante %>
-    <p>
-      <%= link_to "Show this fabricante", fabricante %>
-    </p>
-  <% end %>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Marca / Fabricante</th>
+          <th style="width: 200px;">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @fabricantes.any? %>
+          <% @fabricantes.each do |fabricante| %>
+            <tr>
+              <td><strong><%= fabricante.nome_marca %></strong></td>
+              <td class="action-links">
+                <%= link_to "Detalhes", fabricante %>
+                <%= link_to "Editar", edit_fabricante_path(fabricante) %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="2" style="text-align: center; padding: 40px; color: #6b7280;">Nenhum fabricante cadastrado.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>
-
-<%= link_to "New fabricante", new_fabricante_path %>

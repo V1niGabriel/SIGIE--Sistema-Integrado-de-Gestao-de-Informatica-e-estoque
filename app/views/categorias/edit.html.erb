@@ -1,12 +1,7 @@
-<% content_for :title, "Editing categoria" %>
-
-<h1>Editing categoria</h1>
-
-<%= render "form", categoria: @categoria %>
-
-<br>
-
-<div>
-  <%= link_to "Show this categoria", @categoria %> |
-  <%= link_to "Back to categorias", categorias_path %>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Adicionar Categoria</h1>
+    <%= link_to "← Voltar", categorias_path, class: "btn-secondary" %>
+  </div>
+  <div class="card"><%= render "form", categoria: @categoria %></div>
 </div>

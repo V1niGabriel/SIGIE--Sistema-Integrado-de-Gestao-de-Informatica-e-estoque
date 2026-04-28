@@ -1,10 +1,16 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Detalhes da Categoria</h1>
+    <div style="display: flex; gap: 10px;">
+      <%= link_to "← Voltar", categorias_path, class: "btn-secondary" %>
+      <%= link_to "Editar", edit_categoria_path(@categoria), class: "btn-primary" %>
+    </div>
+  </div>
 
-<%= render @categoria %>
-
-<div>
-  <%= link_to "Edit this categoria", edit_categoria_path(@categoria) %> |
-  <%= link_to "Back to categorias", categorias_path %>
-
-  <%= button_to "Destroy this categoria", @categoria, method: :delete %>
+  <div class="card detail-card">
+    <h2 style="margin: 0 0 20px 0; color: #1f2937;"><%= @categoria.nome_categoria %></h2>
+    <div style="text-align: right; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+      <%= button_to "Excluir Categoria", @categoria, method: :delete, data: { turbo_confirm: "Tem certeza? Isso pode falhar se houver produtos usando esta categoria." }, class: "btn-secondary", style: "color: #ef4444; border-color: #fca5a5;" %>
+    </div>
+  </div>
 </div>

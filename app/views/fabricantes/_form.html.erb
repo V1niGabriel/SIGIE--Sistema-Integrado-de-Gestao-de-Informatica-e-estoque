@@ -1,9 +1,8 @@
-<%= form_with(model: fabricante) do |form| %>
+<%= form_with(model: fabricante, class: "form-content") do |form| %>
   <% if fabricante.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(fabricante.errors.count, "error") %> prohibited this fabricante from being saved:</h2>
-
-      <ul>
+    <div style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <strong>Não foi possível salvar:</strong>
+      <ul style="margin-top: 10px; margin-bottom: 0;">
         <% fabricante.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,12 +10,15 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :nome_marca, style: "display: block" %>
-    <%= form.text_field :nome_marca %>
+  <div class="form-grid full">
+    <div>
+      <%= form.label :nome_marca, "Nome da Marca / Fabricante", class: "form-label" %>
+      <%= form.text_field :nome_marca, class: "form-input", placeholder: "Ex: Samsung", required: true %>
+    </div>
   </div>
 
-  <div>
-    <%= form.submit %>
+  <div class="form-actions">
+    <%= link_to "Cancelar", fabricantes_path, class: "btn-secondary" %>
+    <%= form.submit "Salvar Fabricante", class: "btn-primary" %>
   </div>
 <% end %>

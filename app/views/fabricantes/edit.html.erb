@@ -1,12 +1,7 @@
-<% content_for :title, "Editing fabricante" %>
-
-<h1>Editing fabricante</h1>
-
-<%= render "form", fabricante: @fabricante %>
-
-<br>
-
-<div>
-  <%= link_to "Show this fabricante", @fabricante %> |
-  <%= link_to "Back to fabricantes", fabricantes_path %>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Adicionar Fabricante</h1>
+    <%= link_to "← Voltar", fabricantes_path, class: "btn-secondary" %>
+  </div>
+  <div class="card"><%= render "form", fabricante: @fabricante %></div>
 </div>

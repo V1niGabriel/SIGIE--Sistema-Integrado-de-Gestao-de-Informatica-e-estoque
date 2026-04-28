@@ -1,16 +1,33 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Categorias de Produtos</h1>
+    <%= link_to "+ Adicionar Categoria", new_categoria_path, class: "btn-primary" %>
+  </div>
 
-<% content_for :title, "Categorias" %>
-
-<h1>Categorias</h1>
-
-<div id="categorias">
-  <% @categorias.each do |categoria| %>
-    <%= render categoria %>
-    <p>
-      <%= link_to "Show this categoria", categoria %>
-    </p>
-  <% end %>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nome da Categoria</th>
+          <th style="width: 200px;">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @categorias.any? %>
+          <% @categorias.each do |categoria| %>
+            <tr>
+              <td><strong><%= categoria.nome_categoria %></strong></td>
+              <td class="action-links">
+                <%= link_to "Editar", edit_categoria_path(categoria) %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="2" style="text-align: center; padding: 40px; color: #6b7280;">Nenhuma categoria cadastrada.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>
-
-<%= link_to "New categoria", new_categoria_path %>
