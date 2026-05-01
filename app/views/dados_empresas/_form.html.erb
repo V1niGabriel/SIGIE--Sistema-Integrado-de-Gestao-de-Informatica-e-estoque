@@ -1,9 +1,8 @@
 <%= form_with(model: dados_empresa) do |form| %>
   <% if dados_empresa.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(dados_empresa.errors.count, "error") %> prohibited this dados_empresa from being saved:</h2>
-
-      <ul>
+    <div style="color: #991b1b; background-color: #fee2e2; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <h4 style="margin-top: 0; margin-bottom: 10px;"><%= pluralize(dados_empresa.errors.count, "erro") %> impediram de salvar:</h4>
+      <ul style="margin: 0; padding-left: 20px;">
         <% dados_empresa.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,67 +10,76 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :cnpj, style: "display: block" %>
-    <%= form.text_field :cnpj %>
-  </div>
+  <div class="form-content">
+    <div class="form-section-title">Informações Principais</div>
+    <div class="form-grid" style="margin-bottom: 30px;">
+      <div>
+        <%= form.label :razao_social, "Razão Social", class: "form-label" %>
+        <%= form.text_field :razao_social, class: "form-input" %>
+      </div>
 
-  <div>
-    <%= form.label :razao_social, style: "display: block" %>
-    <%= form.text_field :razao_social %>
-  </div>
+      <div>
+        <%= form.label :cnpj, "CNPJ", class: "form-label" %>
+        <%= form.text_field :cnpj, class: "form-input" %>
+      </div>
 
-  <div>
-    <%= form.label :ie, style: "display: block" %>
-    <%= form.text_field :ie %>
-  </div>
+      <div>
+        <%= form.label :ie, "Inscrição Estadual (IE)", class: "form-label" %>
+        <%= form.text_field :ie, class: "form-input" %>
+      </div>
 
-  <div>
-    <%= form.label :im, style: "display: block" %>
-    <%= form.text_field :im %>
-  </div>
+      <div>
+        <%= form.label :im, "Inscrição Municipal (IM)", class: "form-label" %>
+        <%= form.text_field :im, class: "form-input" %>
+      </div>
 
-  <div>
-    <%= form.label :regime_tributario, style: "display: block" %>
-    <%= form.number_field :regime_tributario %>
-  </div>
+      <div>
+        <%= form.label :regime_tributario, "Regime Tributário", class: "form-label" %>
+        <%= form.number_field :regime_tributario, class: "form-input" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :rua, style: "display: block" %>
-    <%= form.text_field :rua %>
-  </div>
+    <div class="form-section-title">Endereço</div>
+    <div class="form-grid">
+      <div>
+        <%= form.label :cep, "CEP", class: "form-label" %>
+        <%= form.text_field :cep, class: "form-input" %>
+      </div>
 
-  <div>
-    <%= form.label :numero, style: "display: block" %>
-    <%= form.number_field :numero %>
-  </div>
+      <div>
+        <%= form.label :rua, "Rua", class: "form-label" %>
+        <%= form.text_field :rua, class: "form-input" %>
+      </div>
 
-  <div>
-    <%= form.label :complemento, style: "display: block" %>
-    <%= form.textarea :complemento %>
-  </div>
+      <div>
+        <%= form.label :numero, "Número", class: "form-label" %>
+        <%= form.number_field :numero, class: "form-input" %>
+      </div>
 
-  <div>
-    <%= form.label :bairro, style: "display: block" %>
-    <%= form.text_field :bairro %>
-  </div>
+      <div>
+        <%= form.label :complemento, "Complemento", class: "form-label" %>
+        <%= form.text_field :complemento, class: "form-input" %>
+      </div>
 
-  <div>
-    <%= form.label :cidade, style: "display: block" %>
-    <%= form.text_field :cidade %>
-  </div>
+      <div>
+        <%= form.label :bairro, "Bairro", class: "form-label" %>
+        <%= form.text_field :bairro, class: "form-input" %>
+      </div>
 
-  <div>
-    <%= form.label :estado, style: "display: block" %>
-    <%= form.text_field :estado %>
-  </div>
+      <div>
+        <%= form.label :cidade, "Cidade", class: "form-label" %>
+        <%= form.text_field :cidade, class: "form-input" %>
+      </div>
 
-  <div>
-    <%= form.label :cep, style: "display: block" %>
-    <%= form.text_field :cep %>
-  </div>
+      <div>
+        <%= form.label :estado, "Estado (UF)", class: "form-label" %>
+        <%= form.text_field :estado, class: "form-input" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.submit %>
+    <div class="form-actions">
+      <%= link_to "Cancelar", dados_empresas_path, class: "btn-secondary" %>
+      <%= form.submit "Salvar Dados", class: "btn-primary" %>
+    </div>
   </div>
 <% end %>

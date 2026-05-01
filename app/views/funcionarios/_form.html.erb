@@ -1,9 +1,8 @@
 <%= form_with(model: funcionario) do |form| %>
   <% if funcionario.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(funcionario.errors.count, "error") %> prohibited this funcionario from being saved:</h2>
-
-      <ul>
+    <div style="color: #991b1b; background-color: #fee2e2; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <h4 style="margin-top: 0; margin-bottom: 10px;"><%= pluralize(funcionario.errors.count, "erro") %> impediram de salvar:</h4>
+      <ul style="margin: 0; padding-left: 20px;">
         <% funcionario.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,42 +10,42 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :cargo_id, style: "display: block" %>
-    <%= form.text_field :cargo_id %>
-  </div>
+  <div class="form-content">
+    <div class="form-grid">
+      <div>
+        <%= form.label :nome, "Nome Completo", class: "form-label" %>
+        <%= form.text_field :nome, class: "form-input", placeholder: "Ex: Ana Paula Costa" %>
+      </div>
 
-  <div>
-    <%= form.label :nome, style: "display: block" %>
-    <%= form.text_field :nome %>
-  </div>
+      <div>
+        <%= form.label :cpf, "CPF", class: "form-label" %>
+        <%= form.text_field :cpf, class: "form-input", placeholder: "Apenas números" %>
+      </div>
 
-  <div>
-    <%= form.label :cpf, style: "display: block" %>
-    <%= form.text_field :cpf %>
-  </div>
+      <div>
+        <%= form.label :email, "E-mail", class: "form-label" %>
+        <%= form.email_field :email, class: "form-input", placeholder: "exemplo@sigie.com" %>
+      </div>
 
-  <div>
-    <%= form.label :email, style: "display: block" %>
-    <%= form.text_field :email %>
-  </div>
+      <div>
+        <%= form.label :telefone, "Telefone", class: "form-label" %>
+        <%= form.text_field :telefone, class: "form-input", placeholder: "(00) 00000-0000" %>
+      </div>
 
-  <div>
-    <%= form.label :telefone, style: "display: block" %>
-    <%= form.text_field :telefone %>
-  </div>
+      <div>
+        <%= form.label :cargo_id, "Cargo", class: "form-label" %>
+        <%= form.number_field :cargo_id, class: "form-input" %>
+      </div>
 
-  <div>
-    <%= form.label :data_admissao, style: "display: block" %>
-    <%= form.datetime_field :data_admissao %>
-  </div>
+      <div>
+        <%= form.label :data_admissao, "Data de Admissão", class: "form-label" %>
+        <%= form.date_field :data_admissao, class: "form-input" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :senha_hash, style: "display: block" %>
-    <%= form.text_field :senha_hash %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+    <div class="form-actions">
+      <%= link_to "Cancelar", funcionarios_path, class: "btn-secondary" %>
+      <%= form.submit "Salvar Funcionário", class: "btn-primary" %>
+    </div>
   </div>
 <% end %>

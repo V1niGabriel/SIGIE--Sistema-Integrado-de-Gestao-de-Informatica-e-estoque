@@ -1,10 +1,18 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Detalhes do Funcionário</h1>
+    <div style="display: flex; gap: 10px;">
+      <%= link_to "Voltar", funcionarios_path, class: "btn-secondary" %>
+      <%= link_to "Editar", edit_funcionario_path(@funcionario), class: "btn-primary" %>
+      <%= button_to "Excluir", @funcionario, method: :delete, class: "btn-danger", form: { style: "display: inline-block;" } %>
+    </div>
+  </div>
 
-<%= render @funcionario %>
+  <% if notice.present? %>
+    <p style="color: #065f46; background-color: #d1fae5; padding: 10px; border-radius: 8px;"><%= notice %></p>
+  <% end %>
 
-<div>
-  <%= link_to "Edit this funcionario", edit_funcionario_path(@funcionario) %> |
-  <%= link_to "Back to funcionarios", funcionarios_path %>
-
-  <%= button_to "Destroy this funcionario", @funcionario, method: :delete %>
+  <div class="card detail-card">
+    <%= render @funcionario %>
+  </div>
 </div>

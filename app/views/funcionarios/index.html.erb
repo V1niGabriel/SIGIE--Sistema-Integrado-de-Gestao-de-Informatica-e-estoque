@@ -1,16 +1,42 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, "Funcionários" %>
 
-<% content_for :title, "Funcionarios" %>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Funcionários</h1>
+    <%= link_to "Novo Funcionário", new_funcionario_path, class: "btn-primary" %>
+  </div>
 
-<h1>Funcionarios</h1>
-
-<div id="funcionarios">
-  <% @funcionarios.each do |funcionario| %>
-    <%= render funcionario %>
-    <p>
-      <%= link_to "Show this funcionario", funcionario %>
-    </p>
+  <% if notice.present? %>
+    <p style="color: #065f46; background-color: #d1fae5; padding: 10px; border-radius: 8px;"><%= notice %></p>
   <% end %>
-</div>
 
-<%= link_to "New funcionario", new_funcionario_path %>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Cargo</th>
+          <th>Telefone</th>
+          <th>Admissão</th>
+          <th style="width: 120px; text-align: center;">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @funcionarios.each do |funcionario| %>
+          <tr>
+            <td><strong><%= funcionario.nome %></strong><br><small style="color: #6b7280;"><%= funcionario.email %></small></td>
+            <td><%= funcionario.cpf %></td>
+            <td><%= funcionario.cargo_id %></td>
+            <td><%= funcionario.telefone %></td>
+            <td><%= funcionario.data_admissao&.strftime("%d/%m/%Y") %></td>
+            <td class="action-links" style="text-align: center;">
+              <%= link_to "Ver", funcionario %>
+              <%= link_to "Editar", edit_funcionario_path(funcionario) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

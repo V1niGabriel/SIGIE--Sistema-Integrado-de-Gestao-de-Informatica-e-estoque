@@ -1,16 +1,40 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, "Dados da Empresa" %>
 
-<% content_for :title, "Dados empresas" %>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Dados da Empresa</h1>
+    <%= link_to "Nova Empresa", new_dados_empresa_path, class: "btn-primary" %>
+  </div>
 
-<h1>Dados empresas</h1>
-
-<div id="dados_empresas">
-  <% @dados_empresas.each do |dados_empresa| %>
-    <%= render dados_empresa %>
-    <p>
-      <%= link_to "Show this dados empresa", dados_empresa %>
-    </p>
+  <% if notice.present? %>
+    <p style="color: #065f46; background-color: #d1fae5; padding: 10px; border-radius: 8px;"><%= notice %></p>
   <% end %>
-</div>
 
-<%= link_to "New dados empresa", new_dados_empresa_path %>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Razão Social</th>
+          <th>CNPJ</th>
+          <th>Regime Tributário</th>
+          <th>Cidade / UF</th>
+          <th style="width: 120px; text-align: center;">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @dados_empresas.each do |dados_empresa| %>
+          <tr>
+            <td><strong><%= dados_empresa.razao_social %></strong></td>
+            <td><%= dados_empresa.cnpj %></td>
+            <td><%= dados_empresa.regime_tributario %></td>
+            <td><%= dados_empresa.cidade %> - <%= dados_empresa.estado %></td>
+            <td class="action-links" style="text-align: center;">
+              <%= link_to "Ver", dados_empresa %>
+              <%= link_to "Editar", edit_dados_empresa_path(dados_empresa) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

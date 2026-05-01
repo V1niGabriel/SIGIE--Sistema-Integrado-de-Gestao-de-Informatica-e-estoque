@@ -1,12 +1,9 @@
-<% content_for :title, "Editing funcionario" %>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title"><%= action_name == 'new' ? 'Novo Funcionário' : 'Editar Funcionário' %></h1>
+  </div>
 
-<h1>Editing funcionario</h1>
-
-<%= render "form", funcionario: @funcionario %>
-
-<br>
-
-<div>
-  <%= link_to "Show this funcionario", @funcionario %> |
-  <%= link_to "Back to funcionarios", funcionarios_path %>
+  <div class="card">
+    <%= render "form", funcionario: @funcionario %>
+  </div>
 </div>

@@ -1,10 +1,18 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title">Detalhes da Empresa</h1>
+    <div style="display: flex; gap: 10px;">
+      <%= link_to "Voltar", dados_empresas_path, class: "btn-secondary" %>
+      <%= link_to "Editar", edit_dados_empresa_path(@dados_empresa), class: "btn-primary" %>
+      <%= button_to "Excluir", @dados_empresa, method: :delete, class: "btn-danger", form: { style: "display: inline-block;" } %>
+    </div>
+  </div>
 
-<%= render @dados_empresa %>
+  <% if notice.present? %>
+    <p style="color: #065f46; background-color: #d1fae5; padding: 10px; border-radius: 8px;"><%= notice %></p>
+  <% end %>
 
-<div>
-  <%= link_to "Edit this dados empresa", edit_dados_empresa_path(@dados_empresa) %> |
-  <%= link_to "Back to dados empresas", dados_empresas_path %>
-
-  <%= button_to "Destroy this dados empresa", @dados_empresa, method: :delete %>
+  <div class="card detail-card">
+    <%= render @dados_empresa %>
+  </div>
 </div>

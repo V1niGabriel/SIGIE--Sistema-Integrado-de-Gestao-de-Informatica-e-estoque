@@ -1,12 +1,9 @@
-<% content_for :title, "Editing dados empresa" %>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1 class="page-title"><%= action_name == 'new' ? 'Nova Empresa' : 'Editar Dados da Empresa' %></h1>
+  </div>
 
-<h1>Editing dados empresa</h1>
-
-<%= render "form", dados_empresa: @dados_empresa %>
-
-<br>
-
-<div>
-  <%= link_to "Show this dados empresa", @dados_empresa %> |
-  <%= link_to "Back to dados empresas", dados_empresas_path %>
+  <div class="card">
+    <%= render "form", dados_empresa: @dados_empresa %>
+  </div>
 </div>

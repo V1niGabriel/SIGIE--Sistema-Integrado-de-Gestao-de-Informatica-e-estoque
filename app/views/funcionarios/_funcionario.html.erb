@@ -1,37 +1,31 @@
-<div id="<%= dom_id funcionario %>">
-  <div>
-    <strong>Cargo:</strong>
-    <%= funcionario.cargo_id %>
+<div id="<%= dom_id funcionario %>" class="detail-grid">
+  <div class="detail-item">
+    <span class="detail-label">Nome Completo</span>
+    <span class="detail-value"><%= funcionario.nome %></span>
   </div>
 
-  <div>
-    <strong>Nome:</strong>
-    <%= funcionario.nome %>
+  <div class="detail-item">
+    <span class="detail-label">CPF</span>
+    <span class="detail-value"><%= funcionario.cpf %></span>
   </div>
 
-  <div>
-    <strong>Cpf:</strong>
-    <%= funcionario.cpf %>
+  <div class="detail-item">
+    <span class="detail-label">E-mail</span>
+    <span class="detail-value"><%= funcionario.email %></span>
   </div>
 
-  <div>
-    <strong>Email:</strong>
-    <%= funcionario.email %>
+  <div class="detail-item">
+    <span class="detail-label">Telefone</span>
+    <span class="detail-value"><%= funcionario.telefone %></span>
   </div>
 
-  <div>
-    <strong>Telefone:</strong>
-    <%= funcionario.telefone %>
+  <div class="detail-item">
+    <span class="detail-label">Cargo (ID)</span>
+    <span class="detail-value"><%= funcionario.cargo_id %></span>
   </div>
 
-  <div>
-    <strong>Data admissao:</strong>
-    <%= funcionario.data_admissao %>
+  <div class="detail-item">
+    <span class="detail-label">Data de Admissão</span>
+    <span class="detail-value"><%= funcionario.data_admissao&.strftime("%d/%m/%Y") %></span>
   </div>
-
-  <div>
-    <strong>Senha hash:</strong>
-    <%= funcionario.encrypted_password %>
-  </div>
-
 </div>
