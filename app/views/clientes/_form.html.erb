@@ -1,4 +1,4 @@
-<%= form_with(model: cliente, class: "form-content") do |form| %>
+<%= form_with(model: cliente, class: "form-content", data: { controller: "cliente-form" }) do |form| %>
   <% if cliente.errors.any? %>
     <div style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
       <strong>Não foi possível salvar:</strong>
@@ -18,9 +18,26 @@
   </div>
 
   <div class="form-grid">
+    <%# NOVO: Seleção do Tipo de Pessoa %>
     <div>
-      <%= form.label :cpf_cnpj, "CPF ou CNPJ (Apenas números)", class: "form-label" %>
-      <%= form.text_field :cpf_cnpj, class: "form-input", placeholder: "Ex: 12345678900", maxlength: 14, required: true %>
+      <label class="form-label">Tipo de Cliente</label>
+      <select class="form-input" data-cliente-form-target="tipo" data-action="change->cliente-form#toggleTipo">
+        <%# Mantém a seleção correta ao editar um cliente existente %>
+        <option value="pf" <%= 'selected' if cliente.cpf_cnpj.to_s.length <= 14 %>>Pessoa Física</option>
+        <option value="pj" <%= 'selected' if cliente.cpf_cnpj.to_s.length > 14 %>>Pessoa Jurídica</option>
+      </select>
+    </div>
+
+    <%# ATUALIZADO: Documento dinâmico controlado pelo JavaScript %>
+    <div>
+      <%= form.label :cpf_cnpj, "CPF (Opcional)", class: "form-label", data: { cliente_form_target: "documentoLabel" } %>
+      <%= form.text_field :cpf_cnpj, 
+            class: "form-input", 
+            data: { 
+              cliente_form_target: "documentoInput",
+              action: "input->cliente-form#formatarDocumento blur->cliente-form#validarDocumento"
+            } %>
+      <small data-cliente-form-target="erro" style="color: #ef4444; display: none; margin-top: 5px; font-weight: 600;"></small>
     </div>
 
     <div>
