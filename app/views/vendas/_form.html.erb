@@ -16,9 +16,37 @@
   <div class="form-grid">
     <div>
       <%= form.label :cliente_id, "Cliente", class: "form-label" %>
-      <%= form.collection_select :cliente_id, @clientes, :id, :nome_razao_social,
-            { prompt: "Selecione um cliente..." },
-            { class: "form-input", required: true } %>
+      
+      <div class="searchable-select" data-controller="searchable-select">
+        
+        <%# 1. Campo Invisível (Guarda o ID real para o banco e para buscar o orçamento) %>
+        <%= form.hidden_field :cliente_id, 
+              data: { 
+                searchable_select_target: "hiddenInput", 
+                venda_target: "clienteSelect" 
+              } %>
+              
+        <%# 2. Campo Visual (Onde o usuário digita o nome) %>
+        <input type="text" 
+               class="form-input" 
+               placeholder="Digite para buscar um cliente..."
+               value="<%= venda.cliente&.nome_razao_social %>"
+               autocomplete="off"
+               data-searchable-select-target="searchInput"
+               data-action="focus->searchable-select#show blur->searchable-select#hide input->searchable-select#filter">
+               
+        <%# 3. Lista Interativa (Preenchida com o banco de dados) %>
+        <ul class="searchable-list" data-searchable-select-target="list">
+          <% @clientes.each do |c| %>
+            <li data-searchable-select-target="option" 
+                data-value="<%= c.id %>" 
+                data-text="<%= c.nome_razao_social.downcase %>"
+                data-action="click->searchable-select#select">
+              <%= c.nome_razao_social %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
     </div>
 
     <div>
@@ -152,15 +180,10 @@
       <button type="button" class="modal-close" data-action="click->venda#closeModal">✕</button>
     </div>
     <div class="modal-body">
-      <label class="form-label">Selecione o cliente</label>
-      <select class="form-input"
-              data-venda-target="modalClienteSelect"
-              data-action="change->venda#onModalClienteChange">
-        <option value="">Selecione um cliente...</option>
-        <% @clientes.each do |c| %>
-          <option value="<%= c.id %>"><%= c.nome_razao_social %></option>
-        <% end %>
-      </select>
+      <%# Removemos o select de clientes e adicionamos um aviso caso ele tente abrir sem escolher o cliente antes %>
+      <div data-venda-target="modalAvisoCliente" style="display: none; padding: 15px; background-color: #fef3c7; color: #92400e; border-radius: 8px; margin-bottom: 15px;">
+        Por favor, selecione um cliente no formulário principal primeiro.
+      </div>
 
       <div data-venda-target="modalOrcamentosContainer" class="modal-orcamentos-list"></div>
     </div>

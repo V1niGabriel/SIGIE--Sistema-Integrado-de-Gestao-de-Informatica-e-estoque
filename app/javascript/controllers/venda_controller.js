@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["itemsBody", "total", "rowTemplate", "modal", "modalClienteSelect", "modalOrcamentosContainer"]
+  static targets = ["itemsBody", "total", "rowTemplate", "modal", "clienteSelect", "modalOrcamentosContainer", "modalAvisoCliente"]
   static values = { items: Array }
 
   connect() {
@@ -70,10 +70,96 @@ export default class extends Controller {
 
   // ---- Modal de orçamentos ----
 
-  openModal() {
+  async openModal() {
     this.modalTarget.style.display = "flex"
-    this.modalOrcamentosContainerTarget.innerHTML = ""
-    this.modalClienteSelectTarget.value = ""
+    
+    const clienteId = this.clienteSelectTarget.value
+    const container = this.modalOrcamentosContainerTarget
+    const aviso = this.modalAvisoClienteTarget
+
+    if (!clienteId) {
+      aviso.style.display = "block"
+      container.innerHTML = ""
+      return
+    }
+
+    aviso.style.display = "none"
+    container.innerHTML = '<p class="modal-loading" style="padding: 20px; text-align: center; color: #6b7280;">Buscando orçamentos...</p>'
+
+    try {
+      const resp = await fetch(`/orcamentos/por_cliente?cliente_id=${clienteId}`, {
+        headers: { "Accept": "application/json" }
+      })
+      
+      const orcamentos = await resp.json()
+
+      if (orcamentos.length === 0) {
+        container.innerHTML = '<p class="modal-empty" style="padding: 20px; text-align: center; color: #6b7280;">Nenhum orçamento encontrado para este cliente.</p>'
+        return
+      }
+
+      // Pega a data de hoje (zerando as horas para comparar apenas os dias)
+      const hoje = new Date()
+      hoje.setHours(0, 0, 0, 0)
+
+      container.innerHTML = orcamentos.map(o => {
+        // Lógica para transformar a string de data que vem do banco em um objeto de Data do JS
+        let dataExpirou = false
+        if (o.data_validade) {
+          let partesData
+          let dataValidadeJS
+          // Verifica se a data veio no formato DD/MM/YYYY ou YYYY-MM-DD
+          if (o.data_validade.includes("/")) {
+            partesData = o.data_validade.split("/")
+            dataValidadeJS = new Date(partesData[2], partesData[1] - 1, partesData[0])
+          } else {
+            partesData = o.data_validade.split("-")
+            dataValidadeJS = new Date(partesData[0], partesData[1] - 1, partesData[2])
+          }
+          
+          if (dataValidadeJS < hoje) {
+            dataExpirou = true
+          }
+        }
+
+        // Se estiver Expirado: Renderiza o cartão Cinza, sem o data-action de clique e com texto Vermelho
+        if (dataExpirou) {
+          return `
+            <div class="modal-orcamento-card expirado" 
+                 style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 10px; background-color: #f3f4f6; opacity: 0.75; cursor: not-allowed;">
+              <div class="modal-orc-header" style="display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">
+                <span class="modal-orc-id" style="font-weight: 600; color: #9ca3af; text-decoration: line-through;">Orçamento #${o.id}</span>
+                <span class="modal-orc-date" style="font-size: 0.85rem; color: #ef4444; font-weight: bold;">
+                  Expirado em ${o.data_validade}
+                </span>
+              </div>
+              <div class="modal-orc-itens" style="font-size: 0.9rem; color: #9ca3af;">
+                ${o.itens.map(i => `<span>${i.descricao} × ${i.quantidade}</span>`).join(" &nbsp;|&nbsp; ")}
+              </div>
+            </div>
+          `
+        } 
+        // Se for Válido: Renderiza o cartão normal azul, clicável e que carrega o orçamento
+        else {
+          return `
+            <div class="modal-orcamento-card" data-action="click->venda#loadOrcamento"
+                 data-orcamento='${JSON.stringify(o)}' 
+                 style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; background-color: #ffffff;">
+              <div class="modal-orc-header" style="display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #f3f4f6; padding-bottom: 8px;">
+                <span class="modal-orc-id" style="font-weight: 600; color: #3b82f6;">Orçamento #${o.id}</span>
+                <span class="modal-orc-date" style="font-size: 0.85rem; color: #6b7280;">${o.data} &nbsp;·&nbsp; Válido até ${o.data_validade}</span>
+              </div>
+              <div class="modal-orc-itens" style="font-size: 0.9rem; color: #4b5563;">
+                ${o.itens.map(i => `<span>${i.descricao} × ${i.quantidade}</span>`).join(" &nbsp;|&nbsp; ")}
+              </div>
+            </div>
+          `
+        }
+      }).join("")
+
+    } catch (error) {
+      container.innerHTML = '<p style="color: #ef4444; text-align: center;">Erro ao buscar orçamentos.</p>'
+    }
   }
 
   closeModal() {
@@ -84,46 +170,10 @@ export default class extends Controller {
     if (event.target === this.modalTarget) this.closeModal()
   }
 
-  async onModalClienteChange(event) {
-    const clienteId = event.target.value
-    const container = this.modalOrcamentosContainerTarget
-
-    if (!clienteId) {
-      container.innerHTML = ""
-      return
-    }
-
-    container.innerHTML = '<p class="modal-loading">Buscando orçamentos...</p>'
-
-    const resp = await fetch(`/orcamentos/por_cliente?cliente_id=${clienteId}`, {
-      headers: { "Accept": "application/json" }
-    })
-    const orcamentos = await resp.json()
-
-    if (orcamentos.length === 0) {
-      container.innerHTML = '<p class="modal-empty">Nenhum orçamento encontrado para este cliente.</p>'
-      return
-    }
-
-    container.innerHTML = orcamentos.map(o => `
-      <div class="modal-orcamento-card" data-action="click->venda#loadOrcamento"
-           data-orcamento='${JSON.stringify(o)}'>
-        <div class="modal-orc-header">
-          <span class="modal-orc-id">Orçamento #${o.id}</span>
-          <span class="modal-orc-date">${o.data} &nbsp;·&nbsp; Válido até ${o.data_validade}</span>
-        </div>
-        <div class="modal-orc-itens">
-          ${o.itens.map(i => `<span>${i.descricao} × ${i.quantidade}</span>`).join(" &nbsp;|&nbsp; ")}
-        </div>
-      </div>
-    `).join("")
-  }
-
   loadOrcamento(event) {
     const card = event.currentTarget
     const orcamento = JSON.parse(card.dataset.orcamento)
 
-    // Limpa linhas novas do carrinho (mantém registros persistidos marcando destroy)
     this.itemsBodyTarget.querySelectorAll("tr").forEach(row => {
       const destroyInput = row.querySelector("input[name*='_destroy']")
       if (destroyInput) {
@@ -134,7 +184,6 @@ export default class extends Controller {
       }
     })
 
-    // Adiciona cada item do orçamento no carrinho
     orcamento.itens.forEach((item, i) => {
       const template = this.rowTemplateTarget.content.cloneNode(true)
       const row = template.querySelector("tr")
@@ -154,11 +203,7 @@ export default class extends Controller {
       this.itemsBodyTarget.appendChild(row)
       this.recalcRow(this.itemsBodyTarget.lastElementChild)
     })
-
-    // Preenche o select de cliente
-    const clienteSelect = this.element.querySelector("select[name*='cliente_id']")
-    if (clienteSelect) clienteSelect.value = orcamento.cliente_id
-
+    
     this.closeModal()
   }
 
