@@ -12,7 +12,7 @@
 
   <div class="form-grid full">
     <div>
-      <%= form.label :descricao, "Descrição do Produto", class: "form-label" %>
+      <%= form.label :descricao, "Descrição/modelo do Produto", class: "form-label" %>
       <%= form.text_field :descricao, class: "form-input", placeholder: "Ex: Teclado Mecânico RGB", required: true %>
     </div>
   </div>
@@ -49,8 +49,21 @@
     </div>
 
     <div>
-      <%= form.label :quantidade_estoque, "Quantidade Inicial em Estoque", class: "form-label" %>
-      <%= form.number_field :quantidade_estoque, class: "form-input", min: "0", required: true %>
+      <%= form.label :quantidade_estoque, "Quantidade em Estoque", class: "form-label" %>
+      
+      <% if item.persisted? %>
+        <%# Se o item já existe (Editar), o campo fica travado (readonly) %>
+        <%= form.number_field :quantidade_estoque, 
+              class: "form-input", 
+              readonly: true, 
+              style: "background-color: #f3f4f6; color: #6b7280; cursor: not-allowed;" %>
+        <small style="color: #6b7280; font-size: 0.8rem; margin-top: 5px; display: block;">
+          * A quantidade só pode ser alterada através do menu "Mov. de Estoque".
+        </small>
+      <% else %>
+        <%# Se for um item novo (Adicionar Novo), permite colocar o saldo inicial %>
+        <%= form.number_field :quantidade_estoque, class: "form-input", required: true, min: 0 %>
+      <% end %>
     </div>
   </div>
 
