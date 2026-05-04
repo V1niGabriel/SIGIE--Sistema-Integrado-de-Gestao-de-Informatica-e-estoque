@@ -27,14 +27,6 @@
             { prompt: "Selecione um vendedor..." },
             { class: "form-input", required: true } %>
     </div>
-
-    <div>
-      <%= form.label :status_pagamento, "Status do Pagamento", class: "form-label" %>
-      <%= form.select :status_pagamento,
-            [["Processando", "processando"], ["Pago", "pago"], ["Cancelado", "cancelado"]],
-            {},
-            { class: "form-input" } %>
-    </div>
   </div>
 
   <%# ---- Seção 2: Carrinho de Itens ---- %>

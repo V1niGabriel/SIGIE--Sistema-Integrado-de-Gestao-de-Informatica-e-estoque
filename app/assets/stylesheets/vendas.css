@@ -8,20 +8,6 @@
   text-transform: capitalize;
 }
 
-.status-processando {
-  background-color: #fef3c7;
-  color: #d97706;
-}
-
-.status-pago {
-  background-color: #d1fae5;
-  color: #065f46;
-}
-
-.status-cancelado {
-  background-color: #fee2e2;
-  color: #991b1b;
-}
 
 /* --- SEÇÃO DE TÍTULO DENTRO DO FORM --- */
 .form-section-title {

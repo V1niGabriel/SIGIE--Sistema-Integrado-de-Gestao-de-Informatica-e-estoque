@@ -12,7 +12,6 @@
           <th>Data da Venda</th>
           <th>Cliente</th>
           <th>Vendedor</th>
-          <th>Status do Pagamento</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -21,15 +20,8 @@
           <% @vendas.each do |venda| %>
             <tr>
               <td><strong><%= venda.data_venda.strftime("%d/%m/%Y") %></strong></td>
-              
               <td><%= venda.cliente.nome_razao_social %></td>
               <td><%= venda.funcionario.nome %></td>
-              
-              <td>
-                <span class="badge-status status-<%= venda.status_pagamento %>">
-                  <%= venda.status_pagamento %>
-                </span>
-              </td>
               
               <td class="action-links">
                 <%= link_to "Ver Detalhes", venda %>
@@ -39,7 +31,7 @@
           <% end %>
         <% else %>
           <tr>
-            <td colspan="5" style="text-align: center; padding: 40px; color: #6b7280;">
+            <td colspan="4" style="text-align: center; padding: 40px; color: #6b7280;">
               Nenhuma venda registrada ainda. Clique no botão acima para começar!
             </td>
           </tr>

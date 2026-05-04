@@ -31,13 +31,6 @@
         <span class="detail-label">Data da Venda</span>
         <span class="detail-value"><%= @venda.data_venda.strftime("%d/%m/%Y às %H:%M") %></span>
       </div>
-      <div class="venda-info-divider"></div>
-      <div class="venda-info-item">
-        <span class="detail-label">Status do Pagamento</span>
-        <span class="badge-status status-<%= @venda.status_pagamento %>">
-          <%= @venda.status_pagamento.capitalize %>
-        </span>
-      </div>
     </div>
   </div>
 
