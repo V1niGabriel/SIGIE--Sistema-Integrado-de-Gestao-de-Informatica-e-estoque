@@ -5,13 +5,8 @@
   </div>
 
   <div>
-    <strong>Item:</strong>
-    <%= compra.item_id %>
-  </div>
-
-  <div>
-    <strong>Descricao:</strong>
-    <%= compra.descricao %>
+    <strong>Itens:</strong>
+    <%= compra.itens_compra.map { |ic| "#{ic.item.descricao} (#{ic.quantidade}x)" }.join(", ") %>
   </div>
 
   <div>

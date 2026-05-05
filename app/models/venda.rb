@@ -10,11 +10,6 @@ class Venda < ApplicationRecord
   accepts_nested_attributes_for :itens_venda, allow_destroy: true,
                                               reject_if: proc { |attrs| attrs['item_id'].blank? }
 
-  # 2. Dica de Ouro: Enum para o status de pagamento!
-  # Como no banco o status_pagamento é um número (integer) com default 0,
-  # você pode mapear palavras para esses números. O Rails converte automaticamente.
-  enum :status_pagamento, { processando: 0, pago: 1, cancelado: 2 }
-
   validate :deve_ter_ao_menos_um_item
 
   private

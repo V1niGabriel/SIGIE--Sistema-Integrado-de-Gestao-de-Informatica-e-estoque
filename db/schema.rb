@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_26_125814) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_05_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -41,14 +41,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_125814) do
   create_table "compras", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "data_vencimento", null: false
-    t.string "descricao"
     t.bigint "fornecedor_id", null: false
-    t.bigint "item_id", null: false
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.decimal "valor_total", precision: 10, scale: 2, null: false
     t.index ["fornecedor_id"], name: "index_compras_on_fornecedor_id"
-    t.index ["item_id"], name: "index_compras_on_item_id"
   end
 
   create_table "dados_empresas", force: :cascade do |t|
@@ -134,6 +131,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_125814) do
     t.index ["fornecedor_id"], name: "index_itens_on_fornecedor_id"
   end
 
+  create_table "itens_compra", force: :cascade do |t|
+    t.bigint "compra_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "item_id", null: false
+    t.decimal "preco_unitario", precision: 10, scale: 2, null: false
+    t.integer "quantidade", null: false
+    t.datetime "updated_at", null: false
+    t.index ["compra_id"], name: "index_itens_compra_on_compra_id"
+    t.index ["item_id"], name: "index_itens_compra_on_item_id"
+  end
+
   create_table "itens_orcamento", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "item_id", null: false
@@ -189,19 +197,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_125814) do
     t.datetime "created_at", null: false
     t.datetime "data_venda", null: false
     t.bigint "funcionario_id", null: false
-    t.integer "status_pagamento", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.decimal "valor_total", precision: 10, scale: 2
     t.index ["cliente_id"], name: "index_vendas_on_cliente_id"
     t.index ["funcionario_id"], name: "index_vendas_on_funcionario_id"
   end
 
   add_foreign_key "compras", "fornecedores"
-  add_foreign_key "compras", "itens"
   add_foreign_key "enderecos", "clientes"
   add_foreign_key "funcionarios", "cargos"
   add_foreign_key "itens", "categorias"
   add_foreign_key "itens", "fabricantes"
   add_foreign_key "itens", "fornecedores"
+  add_foreign_key "itens_compra", "compras"
+  add_foreign_key "itens_compra", "itens"
   add_foreign_key "itens_orcamento", "itens"
   add_foreign_key "itens_orcamento", "orcamentos"
   add_foreign_key "itens_venda", "itens"

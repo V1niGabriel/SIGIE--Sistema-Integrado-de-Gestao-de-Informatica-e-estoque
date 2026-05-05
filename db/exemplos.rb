@@ -155,39 +155,40 @@ puts "Criando vendas..."
 
 [
   {
-    cliente: clientes[0], funcionario: ana,      status: :pago,        dias_atras: 15,
+    cliente: clientes[0], funcionario: ana,      dias_atras: 15,
     itens: [{ item: itens[5], qtd: 2, preco: 169.00 }, { item: itens[12], qtd: 1, preco: 229.00 }]
   },
   {
-    cliente: clientes[1], funcionario: marcos,   status: :pago,        dias_atras: 12,
+    cliente: clientes[1], funcionario: marcos,   dias_atras: 12,
     itens: [{ item: itens[8], qtd: 1, preco: 259.00 }, { item: itens[13], qtd: 1, preco: 139.00 }]
   },
   {
-    cliente: clientes[2], funcionario: patricia, status: :processando, dias_atras: 8,
+    cliente: clientes[2], funcionario: patricia, dias_atras: 8,
     itens: [{ item: itens[0], qtd: 1, preco: 899.00 }, { item: itens[3], qtd: 1, preco: 1099.00 }, { item: itens[6], qtd: 2, preco: 289.00 }]
   },
   {
-    cliente: clientes[3], funcionario: ana,      status: :pago,        dias_atras: 6,
+    cliente: clientes[3], funcionario: ana,      dias_atras: 6,
     itens: [{ item: itens[1], qtd: 3, preco: 799.00 }, { item: itens[4], qtd: 3, preco: 749.00 }, { item: itens[5], qtd: 6, preco: 169.00 }]
   },
   {
-    cliente: clientes[5], funcionario: marcos,   status: :processando, dias_atras: 3,
+    cliente: clientes[5], funcionario: marcos,   dias_atras: 3,
     itens: [{ item: itens[9], qtd: 1, preco: 449.00 }, { item: itens[7], qtd: 1, preco: 529.00 }]
   },
   {
-    cliente: clientes[6], funcionario: admin,    status: :cancelado,   dias_atras: 2,
+    cliente: clientes[6], funcionario: admin,    dias_atras: 2,
     itens: [{ item: itens[2], qtd: 1, preco: 1499.00 }, { item: itens[11], qtd: 1, preco: 399.00 }]
   },
   {
-    cliente: clientes[4], funcionario: patricia, status: :processando, dias_atras: 1,
+    cliente: clientes[4], funcionario: patricia, dias_atras: 1,
     itens: [{ item: itens[10], qtd: 2, preco: 269.00 }, { item: itens[13], qtd: 4, preco: 139.00 }]
   },
 ].each do |vd|
+  valor_total = vd[:itens].sum { |iv| iv[:preco] * iv[:qtd] }
   venda = Venda.new(
-    cliente:          vd[:cliente],
-    funcionario:      vd[:funcionario],
-    data_venda:       vd[:dias_atras].days.ago,
-    status_pagamento: vd[:status]
+    cliente:     vd[:cliente],
+    funcionario: vd[:funcionario],
+    data_venda:  vd[:dias_atras].days.ago,
+    valor_total: valor_total
   )
   vd[:itens].each { |iv| venda.itens_venda.build(item: iv[:item], quantidade: iv[:qtd], preco_unitario: iv[:preco]) }
   venda.save!
@@ -206,9 +207,66 @@ puts "Criando vendas..."
   end
 end
 
+# ---- Compras ----
+puts "Criando compras..."
+
+[
+  {
+    fornecedor: forn_tech, dias_atras: 20, vencimento: 10.days.from_now, status: :pago,
+    itens: [
+      { item: itens[0], qtd: 10, preco: 650.00 },
+      { item: itens[1], qtd: 8,  preco: 580.00 },
+      { item: itens[2], qtd: 5,  preco: 1100.00 },
+    ]
+  },
+  {
+    fornecedor: forn_atac, dias_atras: 14, vencimento: 16.days.from_now, status: :pendente,
+    itens: [
+      { item: itens[3], qtd: 6,  preco: 780.00 },
+      { item: itens[4], qtd: 8,  preco: 520.00 },
+      { item: itens[8], qtd: 15, preco: 180.00 },
+    ]
+  },
+  {
+    fornecedor: forn_tech, dias_atras: 5, vencimento: 25.days.from_now, status: :pendente,
+    itens: [
+      { item: itens[5], qtd: 20, preco: 110.00 },
+      { item: itens[6], qtd: 15, preco: 200.00 },
+      { item: itens[7], qtd: 10, preco: 370.00 },
+      { item: itens[11], qtd: 8, preco: 280.00 },
+    ]
+  },
+].each do |cd|
+  valor_total = cd[:itens].sum { |ic| ic[:preco] * ic[:qtd] }
+  compra = Compra.new(
+    fornecedor:     cd[:fornecedor],
+    data_vencimento: cd[:vencimento],
+    valor_total:    valor_total,
+    status:         cd[:status]
+  )
+  cd[:itens].each { |ic| compra.itens_compra.build(item: ic[:item], quantidade: ic[:qtd], preco_unitario: ic[:preco]) }
+  compra.save!
+
+  if cd[:status] == :pago
+    cd[:itens].each do |ic|
+      ic[:item].increment!(:quantidade_estoque, ic[:qtd])
+      MovimentacaoEstoque.create!(
+        item:        ic[:item],
+        compra:      compra,
+        funcionario: admin,
+        quantidade:  ic[:qtd],
+        tipo:        :entrada,
+        motivo:      "item comprado",
+        data:        cd[:dias_atras].days.ago
+      )
+    end
+  end
+end
+
 puts "\n✅ Dados de exemplo inseridos com sucesso!"
 puts "   #{funcionarios_data.size} funcionários (Ana, Marcos, Patricia)"
 puts "   #{clientes_data.size} clientes"
 puts "   #{itens_data.size} itens"
 puts "   3 orçamentos"
 puts "   7 vendas"
+puts "   3 compras"
