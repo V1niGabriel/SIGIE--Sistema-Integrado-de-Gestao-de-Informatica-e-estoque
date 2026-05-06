@@ -5,6 +5,28 @@
     <%= link_to "+ Adicionar Novo Cliente", new_cliente_path, class: "btn-primary" %>
   </div>
 
+  <div class="card" style="margin-bottom: 20px; padding: 20px; background-color: #ffffff;">
+    <%= form_with url: clientes_path, method: :get, local: true, class: "search-form" do |form| %>
+      <div style="display: flex; gap: 15px; align-items: center;">
+        <div style="flex: 1;">
+          <%# O value: params[:query] faz o texto continuar na caixa mesmo após clicar em buscar %>
+          <%= form.text_field :query, 
+                value: params[:query], 
+                placeholder: "Buscar por Nome, CPF/CNPJ ou E-mail...", 
+                class: "form-input", 
+                style: "width: 100%;" %>
+        </div>
+        
+        <%= form.submit "Pesquisar", class: "btn-primary" %>
+        
+        <%# Só mostra o botão 'Limpar Busca' se o usuário tiver pesquisado alguma coisa %>
+        <% if params[:query].present? %>
+          <%= link_to "Limpar", clientes_path, class: "btn-secondary" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
   <div class="card">
     <table class="data-table">
       <thead>
@@ -17,20 +39,30 @@
         </tr>
       </thead>
       <tbody>
-        <% @clientes.each do |cliente| %>
+        <% if @clientes.any? %>
+          <% @clientes.each do |cliente| %>
+            <tr>
+              <td><strong><%= cliente.nome_razao_social %></strong></td>
+              <td><%= cliente.cpf_cnpj %></td>
+              <td><%= cliente.email %></td>
+              <td><%= cliente.telefone %></td>
+              <td class="action-links">
+                <%= link_to "Ver Detalhes", cliente %>
+                <%= link_to "Editar", edit_cliente_path(cliente) %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
           <tr>
-            <td><strong><%= cliente.nome_razao_social %></strong></td>
-            <td><%= cliente.cpf_cnpj %></td>
-            <td><%= cliente.email %></td>
-            <td><%= cliente.telefone %></td>
-            <td class="action-links">
-              <%= link_to "Ver Detalhes", cliente %>
-              <%= link_to "Editar", edit_cliente_path(cliente) %>
+            <td colspan="5" style="text-align: center; padding: 40px; color: #6b7280;">
+              <% if params[:query].present? %>
+                Nenhum cliente encontrado para "<strong><%= params[:query] %></strong>".
+              <% else %>
+                Nenhum cliente cadastrado ainda.
+              <% end %>
             </td>
           </tr>
         <% end %>
       </tbody>
     </table>
   </div>
-
-</div>

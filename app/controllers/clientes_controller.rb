@@ -4,7 +4,15 @@ class ClientesController < ApplicationController
 
   # GET /clientes or /clientes.json
   def index
-    @clientes = Cliente.all
+    if params[:query].present?
+      # O comando ILIKE no banco PostgreSQL faz a busca ignorando letras maiúsculas e minúsculas.
+      # Os % antes e depois indicam que a palavra pode estar em qualquer lugar do texto (Busca parcial).
+      termo_busca = "%#{params[:query]}%"
+      @clientes = Cliente.where("nome_razao_social ILIKE :query OR cpf_cnpj ILIKE :query OR email ILIKE :query", query: termo_busca).order(:nome_razao_social)
+    else
+      # Se não tiver pesquisa, mostra todos em ordem alfabética
+      @clientes = Cliente.order(:nome_razao_social)
+    end
   end
 
   # GET /clientes/1 or /clientes/1.json
