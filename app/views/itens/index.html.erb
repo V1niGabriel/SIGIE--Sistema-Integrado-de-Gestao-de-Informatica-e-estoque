@@ -1,8 +1,30 @@
-<div class="dashboard-container">
+<div class="dashboard-container" data-controller="live-search">
   
   <div class="page-header">
     <h1 class="page-title">Estoque de Produtos</h1>
-    <%= link_to "+ Adicionar Novo Item", new_item_path, class: "btn-primary" %>
+  </div>
+
+  <div class="card" style="margin-bottom: 20px; padding: 20px; background-color: #ffffff;">
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <span style="font-size: 1.2rem;">🔍</span>
+      
+      <select class="form-input" 
+              data-live-search-target="criteria"
+              data-action="change->live-search#filter"
+              style="width: 220px; cursor: pointer; border: 1px solid #e5e7eb; background-color: #f9fafb;">
+        <option value="todos">Pesquisar em Todos</option>
+        <option value="descricao">Apenas por Descrição</option>
+        <option value="categoria">Apenas por Categoria</option>
+        <option value="fabricante">Apenas por Fabricante</option>
+      </select>
+
+      <input type="text" 
+             class="form-input" 
+             placeholder="Digite para buscar..." 
+             data-live-search-target="input"
+             data-action="input->live-search#filter"
+             style="flex: 1; border: 1px solid #e5e7eb; background-color: #f9fafb;">
+    </div>
   </div>
 
   <div class="card">
@@ -18,24 +40,34 @@
         </tr>
       </thead>
       <tbody>
-        <% @itens.each do |item| %>
+        <% if @itens.any? %>
+          <% @itens.each do |item| %>
+            <tr data-live-search-target="row"
+                data-descricao="<%= item.descricao.downcase %>"
+                data-categoria="<%= item.categoria.nome_categoria.downcase %>"
+                data-fabricante="<%= item.fabricante.nome_marca.downcase %>">
+                
+              <td><strong><%= item.descricao %></strong></td>
+              <td><%= item.categoria.nome_categoria %></td>
+              <td><%= item.fabricante.nome_marca %></td>
+              
+              <td><%= number_to_currency(item.preco_venda, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+              
+              <td>
+                <span class="badge-stock <%= 'low' if item.quantidade_estoque <= 5 %>">
+                  <%= item.quantidade_estoque %> un.
+                </span>
+              </td>
+              
+              <td class="action-links">
+                <%= link_to "Ver Detalhes", item %>
+                <%= link_to "Editar", edit_item_path(item) %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
           <tr>
-            <td><strong><%= item.descricao %></strong></td>
-            <td><%= item.categoria.nome_categoria %></td>
-            <td><%= item.fabricante.nome_marca %></td>
-            
-            <td><%= number_to_currency(item.preco_venda, unit: "R$ ", separator: ",", delimiter: ".") %></td>
-            
-            <td>
-              <span class="badge-stock <%= 'low' if item.quantidade_estoque <= 5 %>">
-                <%= item.quantidade_estoque %> un.
-              </span>
-            </td>
-            
-            <td class="action-links">
-              <%= link_to "Ver Detalhes", item %>
-              <%= link_to "Editar", edit_item_path(item) %>
-            </td>
+            <td colspan="6" style="text-align: center; padding: 40px; color: #6b7280;">Nenhum produto cadastrado no estoque.</td>
           </tr>
         <% end %>
       </tbody>
