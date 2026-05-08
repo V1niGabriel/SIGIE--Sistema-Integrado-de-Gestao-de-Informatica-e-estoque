@@ -1,16 +1,75 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, "Movimentação de Estoque" %>
 
-<% content_for :title, "Movimentacao estoques" %>
+<div class="dashboard-container">
 
-<h1>Movimentacao estoques</h1>
+  <div class="page-header">
+    <h1 class="page-title">Movimentação de Estoque</h1>
+    <%= link_to "+ Ajuste Manual", new_movimentacao_estoque_path, class: "btn-primary" %>
+  </div>
 
-<div id="movimentacao_estoques">
-  <% @movimentacao_estoques.each do |movimentacao_estoque| %>
-    <%= render movimentacao_estoque %>
-    <p>
-      <%= link_to "Show this movimentacao estoque", movimentacao_estoque %>
-    </p>
+  <% if notice %>
+    <div style="background: #d1fae5; color: #065f46; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: 500;">
+      <%= notice %>
+    </div>
   <% end %>
-</div>
 
-<%= link_to "New movimentacao estoque", new_movimentacao_estoque_path %>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Tipo</th>
+          <th>Produto</th>
+          <th style="text-align: right;">Qtd.</th>
+          <th>Origem</th>
+          <th>Responsável</th>
+          <th>Motivo</th>
+          <th>Ver</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @movimentacoes.any? %>
+          <% @movimentacoes.each do |mov| %>
+            <%
+              badge = case mov.tipo
+              when "entrada"        then { label: "↑ Entrada",       style: "background:#d1fae5;color:#065f46" }
+              when "saida"          then { label: "↓ Saída",          style: "background:#fee2e2;color:#991b1b" }
+              when "entrada_avulsa" then { label: "↑ Entrada Manual", style: "background:#dbeafe;color:#1e40af" }
+              when "saida_avulsa"   then { label: "↓ Saída Manual",   style: "background:#fef3c7;color:#92400e" }
+              end
+
+              origem = if mov.venda_id
+                link_to "Venda ##{mov.venda_id}", mov.venda
+              elsif mov.compra_id
+                link_to "Compra ##{mov.compra_id}", mov.compra
+              else
+                content_tag(:span, "Manual", style: "color: #9ca3af;")
+              end
+            %>
+            <tr>
+              <td style="white-space: nowrap;"><%= mov.data.strftime("%d/%m/%Y %H:%M") %></td>
+              <td>
+                <span class="badge-status" style="<%= badge[:style] %>"><%= badge[:label] %></span>
+              </td>
+              <td><strong><%= mov.item.descricao %></strong></td>
+              <td style="text-align: right; font-weight: 600;"><%= mov.quantidade %></td>
+              <td><%= origem %></td>
+              <td style="color: #6b7280;"><%= mov.funcionario.nome %></td>
+              <td style="color: #6b7280; font-size: 0.875rem;"><%= mov.motivo.presence || "—" %></td>
+              <td class="action-links">
+                <%= link_to "Detalhes", mov %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 40px; color: #6b7280;">
+              Nenhuma movimentação registrada ainda.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+</div>

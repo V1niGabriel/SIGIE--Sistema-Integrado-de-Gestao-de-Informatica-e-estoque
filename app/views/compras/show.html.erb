@@ -1,10 +1,96 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, "Compra ##{@compra.id}" %>
 
-<%= render @compra %>
+<div class="dashboard-container">
 
-<div>
-  <%= link_to "Edit this compra", edit_compra_path(@compra) %> |
-  <%= link_to "Back to compras", compras_path %>
+  <div class="page-header">
+    <h1 class="page-title">Compra #<%= @compra.id %></h1>
+    <div style="display: flex; gap: 10px;">
+      <%= link_to "Editar", edit_compra_path(@compra), class: "btn-secondary" %>
+      <%= link_to "← Voltar", compras_path, class: "btn-secondary" %>
+    </div>
+  </div>
 
-  <%= button_to "Destroy this compra", @compra, method: :delete %>
+  <% if notice %>
+    <div style="background: #d1fae5; color: #065f46; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: 500;">
+      <%= notice %>
+    </div>
+  <% end %>
+
+  <%# ---- Cabeçalho da compra ---- %>
+  <div class="card">
+    <div class="venda-info-bar">
+      <div class="venda-info-item">
+        <span class="detail-label">Fornecedor</span>
+        <span class="detail-value"><%= @compra.fornecedor.nome %></span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Vencimento</span>
+        <% vencido = @compra.data_vencimento.to_date < Date.today && @compra.status != "pago" %>
+        <span class="detail-value" style="<%= 'color: #ef4444;' if vencido %>">
+          <%= @compra.data_vencimento.strftime("%d/%m/%Y") %>
+          <%= " · vencido" if vencido %>
+        </span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Status</span>
+        <% badge_color = { "pendente" => "background:#fef3c7;color:#92400e", "pago" => "background:#d1fae5;color:#065f46", "cancelado" => "background:#fee2e2;color:#991b1b" }[@compra.status] %>
+        <span class="badge-status" style="<%= badge_color %>"><%= @compra.status.capitalize %></span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Registrada em</span>
+        <span class="detail-value"><%= @compra.created_at.strftime("%d/%m/%Y às %H:%M") %></span>
+      </div>
+    </div>
+  </div>
+
+  <%# ---- Itens da compra ---- %>
+  <div class="form-section-title" style="margin-top: 30px;">Itens da Compra</div>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th style="text-align: right;">Qtd.</th>
+          <th style="text-align: right;">Preço Unit. (Custo)</th>
+          <th style="text-align: right;">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @itens_compra.any? %>
+          <% @itens_compra.each do |ic| %>
+            <tr>
+              <td><strong><%= ic.item.descricao %></strong></td>
+              <td style="text-align: right;"><%= ic.quantidade %></td>
+              <td style="text-align: right;"><%= number_to_currency(ic.preco_unitario, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+              <td style="text-align: right; font-weight: 600;">
+                <%= number_to_currency(ic.quantidade * ic.preco_unitario, unit: "R$ ", separator: ",", delimiter: ".") %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 30px; color: #6b7280;">
+              Nenhum item registrado nesta compra.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="cart-total-bar">
+      <span class="cart-total-label">Total da Compra</span>
+      <span class="cart-total-value"><%= number_to_currency(@total, unit: "R$ ", separator: ",", delimiter: ".") %></span>
+    </div>
+  </div>
+
+  <%# ---- Ações ---- %>
+  <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+    <%= button_to "Excluir Compra", @compra, method: :delete,
+          class: "btn-danger",
+          form: { data: { turbo_confirm: "Tem certeza? Esta ação não pode ser desfeita e o estoque não será revertido automaticamente." } } %>
+  </div>
+
 </div>

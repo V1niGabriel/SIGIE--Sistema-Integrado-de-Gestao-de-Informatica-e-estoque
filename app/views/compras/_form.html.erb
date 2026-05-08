@@ -1,9 +1,9 @@
-<%= form_with(model: compra) do |form| %>
-  <% if compra.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(compra.errors.count, "error") %> prohibited this compra from being saved:</h2>
+<%= form_with(model: compra, class: "form-content") do |form| %>
 
-      <ul>
+  <% if compra.errors.any? %>
+    <div style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <strong>Não foi possível salvar:</strong>
+      <ul style="margin-top: 10px; margin-bottom: 0;">
         <% compra.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,37 +11,224 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :fornecedor_id, style: "display: block" %>
-    <%= form.text_field :fornecedor_id %>
+  <%# ---- Seção 1: Cabeçalho da Compra ---- %>
+  <div class="form-section-title">Informações da Compra</div>
+  <div class="form-grid">
+    <div>
+      <%= form.label :fornecedor_id, "Fornecedor", class: "form-label" %>
+      <%= form.collection_select :fornecedor_id, @fornecedores, :id, :nome,
+            { prompt: "Selecione um fornecedor..." },
+            { class: "form-input", required: true } %>
+    </div>
+
+    <div>
+      <%= form.label :data_vencimento, "Data de Vencimento", class: "form-label" %>
+      <%= form.date_field :data_vencimento,
+            value: compra.data_vencimento&.to_date,
+            class: "form-input", required: true %>
+    </div>
+
+    <div>
+      <%= form.label :status, "Status", class: "form-label" %>
+      <%= form.select :status,
+            [["Pendente", "pendente"], ["Pago", "pago"], ["Cancelado", "cancelado"]],
+            { selected: compra.status || "pendente" },
+            { class: "form-input" } %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :item_id, style: "display: block" %>
-    <%= form.text_field :item_id %>
+  <%# ---- Seção 2: Carrinho de Itens ---- %>
+  <div class="form-section-title" style="margin-top: 30px;">Itens da Compra</div>
+  <div class="cart-wrapper">
+    <div class="cart-add-bar">
+      <button type="button" class="btn-secondary btn-sm" data-action="click->compra#openNovoItemModal">
+        + Novo Produto
+      </button>
+      <button type="button" class="btn-primary btn-sm" data-action="click->compra#addItem">
+        + Adicionar Item
+      </button>
+    </div>
+
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th class="cart-col-num">Qtd.</th>
+          <th class="cart-col-num">Preço Unit. (Custo)</th>
+          <th class="cart-col-num">Subtotal</th>
+          <th class="cart-col-action"></th>
+        </tr>
+      </thead>
+      <tbody data-compra-target="itemsBody">
+        <% compra.itens_compra.each do |item_compra| %>
+          <%= form.fields_for :itens_compra, item_compra do |ic| %>
+            <tr class="cart-row">
+              <td class="cart-col-search">
+                <%= ic.hidden_field :item_id %>
+                <div class="item-search-wrapper">
+                  <input type="text"
+                         class="form-input cart-select item-search-input"
+                         placeholder="Digite para buscar um produto..."
+                         value="<%= item_compra.item&.descricao %>"
+                         autocomplete="off"
+                         data-action="input->compra#filterItems blur->compra#hideDropdown">
+                  <ul class="item-dropdown" style="display: none;"></ul>
+                </div>
+              </td>
+              <td>
+                <%= ic.number_field :quantidade, value: item_compra.quantidade || 1, min: 1,
+                      class: "form-input cart-input",
+                      data: { action: "input->compra#updateSubtotal" } %>
+              </td>
+              <td>
+                <%= ic.number_field :preco_unitario, value: item_compra.preco_unitario,
+                      step: "0.01", min: "0",
+                      class: "form-input cart-input cart-price",
+                      readonly: true %>
+              </td>
+              <td class="cart-subtotal">
+                <% subtotal = (item_compra.quantidade || 0) * (item_compra.preco_unitario || 0) %>
+                <%= number_to_currency(subtotal, unit: "R$ ", separator: ",", delimiter: ".") %>
+              </td>
+              <td class="cart-col-action">
+                <%= ic.hidden_field :_destroy, value: false %>
+                <button type="button" class="btn-remove-item" data-action="click->compra#removeItem" title="Remover">✕</button>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="cart-total-bar">
+      <span class="cart-total-label">Total da Compra</span>
+      <span class="cart-total-value" data-compra-target="total">R$ 0,00</span>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :descricao, style: "display: block" %>
-    <%= form.text_field :descricao %>
-  </div>
+  <%# ---- Template para novas linhas ---- %>
+  <template data-compra-target="rowTemplate">
+    <tr class="cart-row">
+      <td class="cart-col-search">
+        <input type="hidden" name="compra[itens_compra_attributes][NEW_RECORD][item_id]" value="">
+        <div class="item-search-wrapper">
+          <input type="text"
+                 class="form-input cart-select item-search-input"
+                 placeholder="Digite para buscar um produto..."
+                 autocomplete="off"
+                 data-action="input->compra#filterItems blur->compra#hideDropdown">
+          <ul class="item-dropdown" style="display: none;"></ul>
+        </div>
+      </td>
+      <td>
+        <input type="number"
+               name="compra[itens_compra_attributes][NEW_RECORD][quantidade]"
+               value="1" min="1"
+               class="form-input cart-input"
+               data-action="input->compra#updateSubtotal" />
+      </td>
+      <td>
+        <input type="number"
+               name="compra[itens_compra_attributes][NEW_RECORD][preco_unitario]"
+               step="0.01" min="0" value="0.00"
+               class="form-input cart-input cart-price"
+               readonly />
+      </td>
+      <td class="cart-subtotal">R$ 0,00</td>
+      <td class="cart-col-action">
+        <button type="button" class="btn-remove-item" data-action="click->compra#removeItem" title="Remover">✕</button>
+      </td>
+    </tr>
+  </template>
 
-  <div>
-    <%= form.label :valor_total, style: "display: block" %>
-    <%= form.text_field :valor_total %>
-  </div>
-
-  <div>
-    <%= form.label :data_vencimento, style: "display: block" %>
-    <%= form.datetime_field :data_vencimento %>
-  </div>
-
-  <div>
-    <%= form.label :status, style: "display: block" %>
-    <%= form.number_field :status %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+  <div class="form-actions">
+    <%= link_to "Cancelar", compras_path, class: "btn-secondary" %>
+    <%= form.submit compra.persisted? ? "Salvar Alterações" : "Registrar Compra", class: "btn-primary" %>
   </div>
 <% end %>
+
+<%# ---- Modal Novo Produto ---- %>
+<div class="modal-overlay"
+     data-compra-target="novoItemModal"
+     data-action="click->compra#closeNovoItemModalOnBackdrop"
+     style="display: none;">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title">Novo Produto</h3>
+      <button type="button" class="modal-close" data-action="click->compra#closeNovoItemModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <p data-compra-target="novoItemFeedback" style="font-size: 0.875rem; min-height: 1.2em;"></p>
+
+      <form action="<%= itens_path %>" method="post"
+            data-compra-target="novoItemForm"
+            data-action="submit->compra#submitNovoItem">
+        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+
+        <div class="form-grid full" style="margin-bottom: 16px;">
+          <div>
+            <label class="form-label">Descrição / Modelo</label>
+            <input type="text" name="item[descricao]" class="form-input" placeholder="Ex: SSD Kingston 240GB" required>
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-bottom: 16px;">
+          <div>
+            <label class="form-label">Categoria</label>
+            <select name="item[categoria_id]" class="form-input" required>
+              <option value="">Selecione...</option>
+              <% Categoria.order(:nome_categoria).each do |c| %>
+                <option value="<%= c.id %>"><%= c.nome_categoria %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <div>
+            <label class="form-label">Fabricante</label>
+            <select name="item[fabricante_id]" class="form-input" required>
+              <option value="">Selecione...</option>
+              <% Fabricante.order(:nome_marca).each do |f| %>
+                <option value="<%= f.id %>"><%= f.nome_marca %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <div>
+            <label class="form-label">Fornecedor</label>
+            <select name="item[fornecedor_id]" class="form-input" required>
+              <option value="">Selecione...</option>
+              <% @fornecedores.each do |f| %>
+                <option value="<%= f.id %>"><%= f.nome %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <div>
+            <label class="form-label">NCM</label>
+            <input type="text" name="item[ncm]" class="form-input" placeholder="Ex: 84717012" maxlength="8">
+          </div>
+
+          <div>
+            <label class="form-label">Preço de Custo (R$)</label>
+            <input type="number" name="item[preco_custo]" class="form-input" step="0.01" min="0" required>
+          </div>
+
+          <div>
+            <label class="form-label">Preço de Venda (R$)</label>
+            <input type="number" name="item[preco_venda]" class="form-input" step="0.01" min="0" required>
+          </div>
+
+          <div>
+            <label class="form-label">Qtd. Inicial em Estoque</label>
+            <input type="number" name="item[quantidade_estoque]" class="form-input" min="0" value="0" required>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-secondary" data-action="click->compra#closeNovoItemModal">Cancelar</button>
+          <button type="submit" class="btn-primary">Salvar Produto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

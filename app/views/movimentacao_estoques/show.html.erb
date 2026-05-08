@@ -1,10 +1,76 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, "Movimentação ##{@movimentacao_estoque.id}" %>
 
-<%= render @movimentacao_estoque %>
+<%
+  mov = @movimentacao_estoque
+  badge = case mov.tipo
+  when "entrada"        then { label: "↑ Entrada",       style: "background:#d1fae5;color:#065f46" }
+  when "saida"          then { label: "↓ Saída",          style: "background:#fee2e2;color:#991b1b" }
+  when "entrada_avulsa" then { label: "↑ Entrada Manual", style: "background:#dbeafe;color:#1e40af" }
+  when "saida_avulsa"   then { label: "↓ Saída Manual",   style: "background:#fef3c7;color:#92400e" }
+  end
+%>
 
-<div>
-  <%= link_to "Edit this movimentacao estoque", edit_movimentacao_estoque_path(@movimentacao_estoque) %> |
-  <%= link_to "Back to movimentacao estoques", movimentacao_estoques_path %>
+<div class="dashboard-container">
 
-  <%= button_to "Destroy this movimentacao estoque", @movimentacao_estoque, method: :delete %>
+  <div class="page-header">
+    <h1 class="page-title">Movimentação #<%= mov.id %></h1>
+    <%= link_to "← Voltar", movimentacao_estoques_path, class: "btn-secondary" %>
+  </div>
+
+  <div class="card">
+    <div class="venda-info-bar">
+      <div class="venda-info-item">
+        <span class="detail-label">Tipo</span>
+        <span class="badge-status" style="<%= badge[:style] %>"><%= badge[:label] %></span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Produto</span>
+        <span class="detail-value"><%= mov.item.descricao %></span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Quantidade</span>
+        <span class="detail-value"><%= mov.quantidade %></span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Data</span>
+        <span class="detail-value"><%= mov.data.strftime("%d/%m/%Y às %H:%M") %></span>
+      </div>
+      <div class="venda-info-divider"></div>
+      <div class="venda-info-item">
+        <span class="detail-label">Responsável</span>
+        <span class="detail-value"><%= mov.funcionario.nome %></span>
+      </div>
+    </div>
+  </div>
+
+  <% if mov.motivo.present? || mov.venda_id || mov.compra_id %>
+    <div class="card" style="margin-top: 20px;">
+      <% if mov.motivo.present? %>
+        <div style="margin-bottom: 16px;">
+          <span class="detail-label">Motivo</span>
+          <p style="margin: 6px 0 0; color: #374151;"><%= mov.motivo %></p>
+        </div>
+      <% end %>
+
+      <% if mov.venda_id %>
+        <div>
+          <span class="detail-label">Gerada pela</span>
+          <p style="margin: 6px 0 0;">
+            <%= link_to "Venda ##{mov.venda_id}", mov.venda, style: "color: #2b2881; font-weight: 600;" %>
+          </p>
+        </div>
+      <% elsif mov.compra_id %>
+        <div>
+          <span class="detail-label">Gerada pela</span>
+          <p style="margin: 6px 0 0;">
+            <%= link_to "Compra ##{mov.compra_id}", mov.compra, style: "color: #2b2881; font-weight: 600;" %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
 </div>

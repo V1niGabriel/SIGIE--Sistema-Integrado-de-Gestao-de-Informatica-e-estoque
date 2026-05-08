@@ -1,16 +1,69 @@
-<p style="color: green"><%= notice %></p>
-
 <% content_for :title, "Compras" %>
 
-<h1>Compras</h1>
+<div class="dashboard-container">
 
-<div id="compras">
-  <% @compras.each do |compra| %>
-    <%= render compra %>
-    <p>
-      <%= link_to "Show this compra", compra %>
-    </p>
+  <div class="page-header">
+    <h1 class="page-title">Compras</h1>
+    <%= link_to "+ Registrar Nova Compra", new_compra_path, class: "btn-primary" %>
+  </div>
+
+  <% if notice %>
+    <div style="background: #d1fae5; color: #065f46; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: 500;">
+      <%= notice %>
+    </div>
   <% end %>
-</div>
 
-<%= link_to "New compra", new_compra_path %>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Fornecedor</th>
+          <th>Itens</th>
+          <th>Valor Total</th>
+          <th>Vencimento</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @compras.any? %>
+          <% @compras.each do |compra| %>
+            <% vencido = compra.data_vencimento.to_date < Date.today && compra.status != "pago" %>
+            <% badge_color = { "pendente" => "background:#fef3c7;color:#92400e", "pago" => "background:#d1fae5;color:#065f46", "cancelado" => "background:#fee2e2;color:#991b1b" }[compra.status] %>
+            <tr>
+              <td style="color: #9ca3af; font-size: 0.85rem;">#<%= compra.id %></td>
+              <td><strong><%= compra.fornecedor.nome %></strong></td>
+              <td style="color: #6b7280; font-size: 0.875rem;"><%= compra.itens_compra.size %> produto(s)</td>
+              <td style="font-weight: 600;">
+                <%= number_to_currency(compra.valor_total, unit: "R$ ", separator: ",", delimiter: ".") %>
+              </td>
+              <td>
+                <span style="<%= 'color: #ef4444; font-weight: 600;' if vencido %>">
+                  <%= compra.data_vencimento.strftime("%d/%m/%Y") %>
+                  <%= " · vencido" if vencido %>
+                </span>
+              </td>
+              <td>
+                <span class="badge-status" style="<%= badge_color %>">
+                  <%= compra.status.capitalize %>
+                </span>
+              </td>
+              <td class="action-links">
+                <%= link_to "Ver Detalhes", compra %>
+                <%= link_to "Editar", edit_compra_path(compra) %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 40px; color: #6b7280;">
+              Nenhuma compra registrada ainda. Clique no botão acima para começar!
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+</div>

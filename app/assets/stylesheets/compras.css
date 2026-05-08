@@ -1,0 +1,60 @@
+/* Herda todos os estilos de carrinho de vendas.css */
+
+/* ---- BUSCA DE ITEM NO CARRINHO ---- */
+.cart-col-search {
+  min-width: 260px;
+}
+
+.item-search-wrapper {
+  position: relative;
+}
+
+.item-search-input {
+  width: 100%;
+}
+
+.item-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 50;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.item-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 14px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: #374151;
+  gap: 12px;
+}
+
+.item-option:hover {
+  background-color: #f0f4ff;
+  color: #2b2881;
+}
+
+.item-option-estoque {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ---- MODAL NOVO PRODUTO (max-width maior) ---- */
+.modal-box-wide {
+  max-width: 750px;
+}

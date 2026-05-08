@@ -1,9 +1,9 @@
-<%= form_with(model: movimentacao_estoque) do |form| %>
-  <% if movimentacao_estoque.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(movimentacao_estoque.errors.count, "error") %> prohibited this movimentacao_estoque from being saved:</h2>
+<%= form_with(model: movimentacao_estoque, url: movimentacao_estoques_path, class: "form-content") do |form| %>
 
-      <ul>
+  <% if movimentacao_estoque.errors.any? %>
+    <div style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <strong>Não foi possível salvar:</strong>
+      <ul style="margin-top: 10px; margin-bottom: 0;">
         <% movimentacao_estoque.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,47 +11,65 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :funcionario_id, style: "display: block" %>
-    <%= form.text_field :funcionario_id %>
+  <div class="form-grid">
+    <div>
+      <%= form.label :item_id, "Produto", class: "form-label" %>
+      <div class="searchable-select" data-controller="searchable-select">
+        <%= form.hidden_field :item_id, data: { searchable_select_target: "hiddenInput" } %>
+        <input type="text"
+               class="form-input"
+               placeholder="Digite para buscar um produto..."
+               value="<%= movimentacao_estoque.item&.descricao %>"
+               autocomplete="off"
+               data-searchable-select-target="searchInput"
+               data-action="focus->searchable-select#show blur->searchable-select#hide input->searchable-select#filter">
+        <ul class="searchable-list" data-searchable-select-target="list">
+          <% @itens.each do |i| %>
+            <li data-searchable-select-target="option"
+                data-value="<%= i.id %>"
+                data-text="<%= i.descricao.downcase %>"
+                data-action="click->searchable-select#select">
+              <%= i.descricao %>
+              <span style="color: #9ca3af; font-size: 0.8rem; margin-left: 8px;"><%= i.quantidade_estoque %> em estoque</span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :tipo, "Tipo de Movimentação", class: "form-label" %>
+      <%= form.select :tipo,
+            [["↑ Entrada Manual", "entrada_avulsa"], ["↓ Saída Manual", "saida_avulsa"]],
+            { prompt: "Selecione o tipo..." },
+            { class: "form-input", required: true } %>
+    </div>
+
+    <div>
+      <%= form.label :quantidade, "Quantidade", class: "form-label" %>
+      <%= form.number_field :quantidade, min: 1, class: "form-input", required: true %>
+    </div>
+
+    <div>
+      <%= form.label :data, "Data / Hora", class: "form-label" %>
+      <%= form.datetime_local_field :data,
+            value: movimentacao_estoque.data&.strftime("%Y-%m-%dT%H:%M") || Time.current.strftime("%Y-%m-%dT%H:%M"),
+            class: "form-input",
+            readonly: true,
+            style: "background-color: #f3f4f6; color: #6b7280; cursor: not-allowed;" %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :item_id, style: "display: block" %>
-    <%= form.text_field :item_id %>
+  <div class="form-grid full" style="margin-top: 16px;">
+    <div>
+      <%= form.label :motivo, "Motivo / Observação", class: "form-label" %>
+      <%= form.text_area :motivo, class: "form-input", rows: 3,
+            placeholder: "Ex: Ajuste de inventário, produto danificado, devolução..." %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :venda_id, style: "display: block" %>
-    <%= form.text_field :venda_id %>
-  </div>
-
-  <div>
-    <%= form.label :compra_id, style: "display: block" %>
-    <%= form.text_field :compra_id %>
-  </div>
-
-  <div>
-    <%= form.label :tipo, style: "display: block" %>
-    <%= form.number_field :tipo %>
-  </div>
-
-  <div>
-    <%= form.label :quantidade, style: "display: block" %>
-    <%= form.number_field :quantidade %>
-  </div>
-
-  <div>
-    <%= form.label :motivo, style: "display: block" %>
-    <%= form.text_field :motivo %>
-  </div>
-
-  <div>
-    <%= form.label :data, style: "display: block" %>
-    <%= form.datetime_field :data %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+  <div class="form-actions">
+    <%= link_to "Cancelar", movimentacao_estoques_path, class: "btn-secondary" %>
+    <%= form.submit "Registrar Movimentação", class: "btn-primary" %>
   </div>
 <% end %>

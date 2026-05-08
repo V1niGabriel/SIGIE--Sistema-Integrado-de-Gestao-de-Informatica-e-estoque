@@ -1,12 +1,13 @@
-<% content_for :title, "Editing compra" %>
+<% content_for :title, "Editar Compra ##{@compra.id}" %>
 
-<h1>Editing compra</h1>
+<div class="dashboard-container" data-controller="compra"
+     data-compra-items-value="<%= @itens.map { |i| { id: i.id, descricao: i.descricao, preco_custo: i.preco_custo.to_f, estoque: i.quantidade_estoque } }.to_json %>">
+  <div class="page-header">
+    <h1 class="page-title">Editar Compra #<%= @compra.id %></h1>
+    <%= link_to "← Voltar", compras_path, class: "btn-secondary" %>
+  </div>
 
-<%= render "form", compra: @compra %>
-
-<br>
-
-<div>
-  <%= link_to "Show this compra", @compra %> |
-  <%= link_to "Back to compras", compras_path %>
+  <div class="card">
+    <%= render "form", compra: @compra %>
+  </div>
 </div>

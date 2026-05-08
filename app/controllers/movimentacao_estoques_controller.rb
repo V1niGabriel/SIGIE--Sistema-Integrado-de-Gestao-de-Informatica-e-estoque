@@ -1,71 +1,68 @@
 class MovimentacaoEstoquesController < ApplicationController
   before_action :authenticate_funcionario!
-  before_action :set_movimentacao_estoque, only: %i[ show edit update destroy ]
+  before_action :set_movimentacao, only: %i[ show ]
 
-  # GET /movimentacao_estoques or /movimentacao_estoques.json
   def index
-    @movimentacao_estoques = MovimentacaoEstoque.all
+    @movimentacoes = MovimentacaoEstoque
+      .includes(:item, :funcionario, :venda, :compra)
+      .order(data: :desc)
   end
 
-  # GET /movimentacao_estoques/1 or /movimentacao_estoques/1.json
   def show
   end
 
-  # GET /movimentacao_estoques/new
   def new
-    @movimentacao_estoque = MovimentacaoEstoque.new
+    @movimentacao_estoque = MovimentacaoEstoque.new(data: Time.current)
+    @itens = Item.order(:descricao)
+    @funcionarios = Funcionario.order(:nome)
   end
 
-  # GET /movimentacao_estoques/1/edit
-  def edit
-  end
-
-  # POST /movimentacao_estoques or /movimentacao_estoques.json
   def create
-    @movimentacao_estoque = MovimentacaoEstoque.new(movimentacao_estoque_params)
+    @movimentacao_estoque = MovimentacaoEstoque.new(movimentacao_params)
+    @movimentacao_estoque.funcionario = current_funcionario
 
-    respond_to do |format|
-      if @movimentacao_estoque.save
-        format.html { redirect_to @movimentacao_estoque, notice: "Movimentacao estoque was successfully created." }
-        format.json { render :show, status: :created, location: @movimentacao_estoque }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @movimentacao_estoque.errors, status: :unprocessable_entity }
-      end
+    unless %w[entrada_avulsa saida_avulsa].include?(@movimentacao_estoque.tipo)
+      @movimentacao_estoque.errors.add(:tipo, "inválido para ajuste manual")
+      render_new and return
     end
-  end
 
-  # PATCH/PUT /movimentacao_estoques/1 or /movimentacao_estoques/1.json
-  def update
-    respond_to do |format|
-      if @movimentacao_estoque.update(movimentacao_estoque_params)
-        format.html { redirect_to @movimentacao_estoque, notice: "Movimentacao estoque was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @movimentacao_estoque }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @movimentacao_estoque.errors, status: :unprocessable_entity }
-      end
+    saved = ApplicationRecord.transaction do
+      @movimentacao_estoque.save! && ajustar_estoque
+    rescue ActiveRecord::RecordInvalid
+      false
     end
-  end
 
-  # DELETE /movimentacao_estoques/1 or /movimentacao_estoques/1.json
-  def destroy
-    @movimentacao_estoque.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to movimentacao_estoques_path, notice: "Movimentacao estoque was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+    if saved
+      redirect_to movimentacao_estoques_path, notice: "Movimentação registrada com sucesso."
+    else
+      render_new
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_movimentacao_estoque
-      @movimentacao_estoque = MovimentacaoEstoque.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def movimentacao_estoque_params
-      params.expect(movimentacao_estoque: [ :funcionario_id, :item_id, :venda_id, :compra_id, :tipo, :quantidade, :motivo, :data ])
+  def set_movimentacao
+    @movimentacao_estoque = MovimentacaoEstoque.find(params.expect(:id))
+  end
+
+  def movimentacao_params
+    params.require(:movimentacao_estoque).permit(:item_id, :tipo, :quantidade, :motivo, :data)
+  end
+
+  def ajustar_estoque
+    item = @movimentacao_estoque.item
+    qty  = @movimentacao_estoque.quantidade
+    if @movimentacao_estoque.entrada_avulsa?
+      item.increment!(:quantidade_estoque, qty)
+    else
+      item.decrement!(:quantidade_estoque, qty)
     end
+    true
+  end
+
+  def render_new
+    @itens = Item.order(:descricao)
+    @funcionarios = Funcionario.order(:nome)
+    render :new, status: :unprocessable_entity
+  end
 end

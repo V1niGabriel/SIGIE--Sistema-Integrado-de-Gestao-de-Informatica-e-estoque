@@ -23,6 +23,7 @@ class VendasController < ApplicationController
   def create
     @venda = Venda.new(venda_params)
     @venda.data_venda = Time.current
+    @venda.valor_total = @venda.itens_venda.sum { |iv| (iv.quantidade || 0) * (iv.preco_unitario || 0) }
 
     saved = ApplicationRecord.transaction do
       @venda.save! && registrar_movimentacoes_saida(@venda.itens_venda, "item vendido")
@@ -74,7 +75,7 @@ class VendasController < ApplicationController
 
   def venda_params
     params.require(:venda).permit(
-      :cliente_id, :funcionario_id, :status_pagamento,
+      :cliente_id, :funcionario_id, :valor_total,
       itens_venda_attributes: [ :id, :item_id, :quantidade, :preco_unitario, :_destroy ]
     )
   end
