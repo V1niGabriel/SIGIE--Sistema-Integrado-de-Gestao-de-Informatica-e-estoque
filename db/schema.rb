@@ -10,16 +10,62 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_05_000003) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_08_163245) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "cargos", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "criar_cargos", default: false
+    t.boolean "criar_categorias", default: false
+    t.boolean "criar_clientes", default: false
+    t.boolean "criar_compras", default: false
+    t.boolean "criar_fabricantes", default: false
+    t.boolean "criar_fornecedores", default: false
+    t.boolean "criar_funcionarios", default: false
+    t.boolean "criar_itens", default: false
+    t.boolean "criar_movimentacoes", default: false
+    t.boolean "criar_orcamentos", default: false
+    t.boolean "criar_vendas", default: false
     t.string "descricao", limit: 255
+    t.boolean "editar_cargos", default: false
+    t.boolean "editar_categorias", default: false
+    t.boolean "editar_clientes", default: false
+    t.boolean "editar_compras", default: false
+    t.boolean "editar_empresa", default: false
+    t.boolean "editar_fabricantes", default: false
+    t.boolean "editar_fornecedores", default: false
+    t.boolean "editar_funcionarios", default: false
+    t.boolean "editar_itens", default: false
+    t.boolean "editar_movimentacoes", default: false
+    t.boolean "editar_orcamentos", default: false
+    t.boolean "editar_vendas", default: false
+    t.boolean "excluir_cargos", default: false
+    t.boolean "excluir_categorias", default: false
+    t.boolean "excluir_clientes", default: false
+    t.boolean "excluir_compras", default: false
+    t.boolean "excluir_fabricantes", default: false
+    t.boolean "excluir_fornecedores", default: false
+    t.boolean "excluir_funcionarios", default: false
+    t.boolean "excluir_itens", default: false
+    t.boolean "excluir_movimentacoes", default: false
+    t.boolean "excluir_orcamentos", default: false
+    t.boolean "excluir_vendas", default: false
     t.decimal "salario_base", precision: 10, scale: 2, null: false
     t.string "titulo", limit: 30, null: false
     t.datetime "updated_at", null: false
+    t.boolean "visualizar_cargos", default: false
+    t.boolean "visualizar_categorias", default: false
+    t.boolean "visualizar_clientes", default: false
+    t.boolean "visualizar_compras", default: false
+    t.boolean "visualizar_empresa", default: false
+    t.boolean "visualizar_fabricantes", default: false
+    t.boolean "visualizar_fornecedores", default: false
+    t.boolean "visualizar_funcionarios", default: false
+    t.boolean "visualizar_itens", default: false
+    t.boolean "visualizar_movimentacoes", default: false
+    t.boolean "visualizar_orcamentos", default: false
+    t.boolean "visualizar_vendas", default: false
   end
 
   create_table "categorias", force: :cascade do |t|

@@ -2,6 +2,18 @@ class FuncionariosController < ApplicationController
   before_action :authenticate_funcionario!
   before_action :set_funcionario, only: %i[ show edit update destroy ]
 
+  # Bloqueia a página de listagem se não puder visualizar
+  before_action -> { verificar_permissao(:visualizar_clientes) }, only: [:index, :show]
+  
+  # Bloqueia a criação se não puder criar
+  before_action -> { verificar_permissao(:criar_clientes) }, only: [:new, :create]
+  
+  # Bloqueia a edição se não puder editar
+  before_action -> { verificar_permissao(:editar_clientes) }, only: [:edit, :update]
+  
+  # Bloqueia a exclusão
+  before_action -> { verificar_permissao(:excluir_clientes) }, only: [:destroy]
+
   # GET /funcionarios or /funcionarios.json
   def index
     @funcionarios = Funcionario.all
@@ -66,6 +78,6 @@ class FuncionariosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def funcionario_params
-      params.expect(funcionario: [ :cargo_id, :nome, :cpf, :email, :telefone, :data_admissao, :senha_hash ])
+      params.expect(funcionario: [ :cargo_id, :nome, :cpf, :email, :telefone, :data_admissao, :password, :password_confirmation ])
     end
 end

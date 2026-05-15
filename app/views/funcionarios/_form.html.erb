@@ -11,39 +11,62 @@
   <% end %>
 
   <div class="form-content">
+    <h3 style="color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 20px;">
+      Dados Pessoais
+    </h3>
+
     <div class="form-grid">
       <div>
         <%= form.label :nome, "Nome Completo", class: "form-label" %>
-        <%= form.text_field :nome, class: "form-input", placeholder: "Ex: Ana Paula Costa" %>
+        <%= form.text_field :nome, class: "form-input", placeholder: "Ex: Ana Paula Costa", required: true %>
       </div>
 
       <div>
-        <%= form.label :cpf, "CPF", class: "form-label" %>
-        <%= form.text_field :cpf, class: "form-input", placeholder: "Apenas números" %>
+        <%= form.label :cpf, "CPF (Apenas números)", class: "form-label" %>
+        <%= form.text_field :cpf, class: "form-input", placeholder: "Ex: 12345678901", required: true, maxlength: 11 %>
       </div>
 
       <div>
-        <%= form.label :email, "E-mail", class: "form-label" %>
-        <%= form.email_field :email, class: "form-input", placeholder: "exemplo@sigie.com" %>
-      </div>
-
-      <div>
-        <%= form.label :telefone, "Telefone", class: "form-label" %>
-        <%= form.text_field :telefone, class: "form-input", placeholder: "(00) 00000-0000" %>
-      </div>
-
-      <div>
-        <%= form.label :cargo_id, "Cargo", class: "form-label" %>
-        <%= form.number_field :cargo_id, class: "form-input" %>
+        <%= form.label :telefone, "Telefone / WhatsApp (Apenas números)", class: "form-label" %>
+        <%= form.text_field :telefone, class: "form-input", placeholder: "Ex: 71988887777", required: true, maxlength: 11 %>
       </div>
 
       <div>
         <%= form.label :data_admissao, "Data de Admissão", class: "form-label" %>
-        <%= form.date_field :data_admissao, class: "form-input" %>
+        <%= form.date_field :data_admissao, class: "form-input", required: true %>
       </div>
     </div>
 
-    <div class="form-actions">
+    <h3 style="color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-top: 30px; margin-bottom: 20px;">
+      Acesso ao Sistema
+    </h3>
+
+    <div class="form-grid">
+      <div>
+        <%= form.label :email, "E-mail (Login no Sistema)", class: "form-label" %>
+        <%= form.email_field :email, class: "form-input", placeholder: "exemplo@sigie.com", required: true %>
+      </div>
+
+      <!-- AQUI ESTÁ A MÁGICA DO CARGO -->
+      <div>
+        <%= form.label :cargo_id, "Cargo / Nível de Permissão", class: "form-label" %>
+        <%# O collection_select busca todos os Cargos no banco e mostra o 'titulo' para o usuário escolher %>
+        <%= form.collection_select :cargo_id, Cargo.order(:titulo), :id, :titulo, { prompt: "Selecione o Cargo..." }, { class: "form-input", required: true } %>
+      </div>
+      
+      <!-- CAMPOS DE SENHA DO DEVISE -->
+      <div>
+        <%= form.label :password, funcionario.new_record? ? "Senha Provisória" : "Nova Senha (deixe em branco para não alterar)", class: "form-label" %>
+        <%= form.password_field :password, class: "form-input", placeholder: "Mínimo de 6 caracteres", required: funcionario.new_record? %>
+      </div>
+
+      <div>
+        <%= form.label :password_confirmation, "Confirme a Senha", class: "form-label" %>
+        <%= form.password_field :password_confirmation, class: "form-input", placeholder: "Repita a senha", required: funcionario.new_record? %>
+      </div>
+    </div>
+
+    <div class="form-actions" style="margin-top: 30px;">
       <%= link_to "Cancelar", funcionarios_path, class: "btn-secondary" %>
       <%= form.submit "Salvar Funcionário", class: "btn-primary" %>
     </div>

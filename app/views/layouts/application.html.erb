@@ -21,43 +21,82 @@
 
   <body>
     <% if funcionario_signed_in? %>
+      <!-- Criamos um atalho para não ter que digitar isso 20 vezes -->
+      <% cargo = current_funcionario.cargo %>
+
       <div class="app-layout">
         
         <aside class="sidebar">
           <div class="sidebar-logo">
-            <div class="sidebar-logo">
-              <%= image_tag "Logo_SIGIE-transparente.png", alt: "Logo SIGIE" %>
-            </div>
+            <%= image_tag "Logo_SIGIE-transparente.png", alt: "Logo SIGIE" %>
           </div>
 
           <nav class="sidebar-nav">
-            <div class="nav-group">
-              <div class="nav-title">Principal</div>
-              <%= link_to "Início / Vendas", root_path, class: "nav-link" %>
-              <%= link_to "Orçamentos", orcamentos_path, class: "nav-link" %>
-            </div>
+            
+            <!-- GRUPO: PRINCIPAL -->
+            <% if cargo.visualizar_vendas? || cargo.visualizar_orcamentos? %>
+              <div class="nav-group">
+                <div class="nav-title">Principal</div>
+                <% if cargo.visualizar_vendas? %>
+                  <%= link_to "Início / Vendas", root_path, class: "nav-link" %>
+                <% end %>
+                <% if cargo.visualizar_orcamentos? %>
+                  <%= link_to "Orçamentos", orcamentos_path, class: "nav-link" %>
+                <% end %>
+              </div>
+            <% end %>
 
-            <div class="nav-group">
-              <div class="nav-title">Cadastros</div>
-              <%= link_to "Clientes", clientes_path, class: "nav-link" %>
-              <%= link_to "Estoque (Itens)", itens_path, class: "nav-link" %>
-            </div>
+            <!-- GRUPO: CADASTROS -->
+            <% if cargo.visualizar_clientes? || cargo.visualizar_itens? %>
+              <div class="nav-group">
+                <div class="nav-title">Cadastros</div>
+                <% if cargo.visualizar_clientes? %>
+                  <%= link_to "Clientes", clientes_path, class: "nav-link" %>
+                <% end %>
+                <% if cargo.visualizar_itens? %>
+                  <%= link_to "Estoque (Itens)", itens_path, class: "nav-link" %>
+                <% end %>
+              </div>
+            <% end %>
 
-            <div class="nav-group">
-              <div class="nav-title">Gestão de Compras</div>
-              <%= link_to "Compras", compras_path, class: "nav-link" %>
-              <%= link_to "Fornecedores", fornecedores_path, class: "nav-link" %>
-              <%= link_to "Fabricantes", fabricantes_path, class: "nav-link" %>
-              <%= link_to "Categorias", categorias_path, class: "nav-link" %>
-            </div>
+            <!-- GRUPO: GESTÃO DE COMPRAS -->
+            <% if cargo.visualizar_compras? || cargo.visualizar_fornecedores? || cargo.visualizar_fabricantes? || cargo.visualizar_categorias? %>
+              <div class="nav-group">
+                <div class="nav-title">Gestão de Compras</div>
+                <% if cargo.visualizar_compras? %>
+                  <%= link_to "Compras", compras_path, class: "nav-link" %>
+                <% end %>
+                <% if cargo.visualizar_fornecedores? %>
+                  <%= link_to "Fornecedores", fornecedores_path, class: "nav-link" %>
+                <% end %>
+                <% if cargo.visualizar_fabricantes? %>
+                  <%= link_to "Fabricantes", fabricantes_path, class: "nav-link" %>
+                <% end %>
+                <% if cargo.visualizar_categorias? %>
+                  <%= link_to "Categorias", categorias_path, class: "nav-link" %>
+                <% end %>
+              </div>
+            <% end %>
 
-            <div class="nav-group">
-              <div class="nav-title">Administração</div>
-              <%= link_to "Mov. de Estoque", movimentacao_estoques_path, class: "nav-link" %>
-              <%= link_to "Funcionários", funcionarios_path, class: "nav-link" %>
-              <%= link_to "Cargos", cargos_path, class: "nav-link" %>
-              <%= link_to "Dados da Empresa", dados_empresas_path, class: "nav-link" %>
-            </div>
+            <!-- GRUPO: ADMINISTRAÇÃO -->
+            <% if cargo.visualizar_movimentacoes? || cargo.visualizar_funcionarios? || cargo.visualizar_cargos? || cargo.visualizar_empresa? %>
+              <div class="nav-group">
+                <div class="nav-title">Administração</div>
+                <% if cargo.visualizar_movimentacoes? %>
+                  <%= link_to "Mov. de Estoque", movimentacao_estoques_path, class: "nav-link" %>
+                <% end %>
+                <% if cargo.visualizar_funcionarios? %>
+                  <%= link_to "Funcionários", funcionarios_path, class: "nav-link" %>
+                <% end %>
+                <% if cargo.visualizar_cargos? %>
+                  <%= link_to "Cargos", cargos_path, class: "nav-link" %>
+                <% end %>
+                <% if cargo.visualizar_empresa? %>
+                  <%= link_to "Dados da Empresa", dados_empresas_path, class: "nav-link" %>
+                <% end %>
+              </div>
+            <% end %>
+
           </nav>
         </aside>
 

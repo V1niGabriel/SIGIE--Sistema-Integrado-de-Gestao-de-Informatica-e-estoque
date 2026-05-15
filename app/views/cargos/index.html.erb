@@ -1,16 +1,64 @@
-<p style="color: green"><%= notice %></p>
+<div class="dashboard-container">
+  
+  <div class="page-header">
+    <h1 class="page-title">Cargos e Permissões</h1>
+    <%= link_to "+ Adicionar Novo Cargo", new_cargo_path, class: "btn-primary" %>
+  </div>
 
-<% content_for :title, "Cargos" %>
-
-<h1>Cargos</h1>
-
-<div id="cargos">
-  <% @cargos.each do |cargo| %>
-    <%= render cargo %>
-    <p>
-      <%= link_to "Show this cargo", cargo %>
-    </p>
-  <% end %>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Título do Cargo</th>
+          <th>Resumo de Acessos</th>
+          <th style="width: 150px;">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @cargos.any? %>
+          <% @cargos.each do |cargo| %>
+            <tr>
+              <td>
+                <strong><%= cargo.titulo %></strong>
+                <div style="font-size: 0.85rem; color: #6b7280; margin-top: 4px;"><%= cargo.descricao %></div>
+              </td>
+              
+              <td>
+                <div class="badges-container">
+                <!-- Etiquetas de Acesso (Resumo por Setor) -->
+                  <% if cargo.visualizar_vendas? || cargo.visualizar_orcamentos? || cargo.visualizar_clientes? %>
+                    <span class="badge-stock" style="background-color: #dbeafe; color: #1e40af; margin: 0;">Comercial</span>
+                  <% end %>
+                  <% if cargo.visualizar_itens? || cargo.visualizar_movimentacoes? %>
+                    <span class="badge-stock" style="background-color: #fef3c7; color: #92400e; margin: 0;">Estoque</span>
+                  <% end %>
+                  <% if cargo.visualizar_compras? || cargo.visualizar_fornecedores? %>
+                    <span class="badge-stock" style="background-color: #e0e7ff; color: #3730a3; margin: 0;">Compras</span>
+                  <% end %>
+                  <% if cargo.visualizar_funcionarios? || cargo.visualizar_cargos? || cargo.visualizar_empresa? %>
+                    <span class="badge-stock" style="background-color: #fee2e2; color: #991b1b; margin: 0;">Administração</span>
+                  <% end %>
+                  
+                  <% unless cargo.visualizar_vendas? || cargo.visualizar_orcamentos? || cargo.visualizar_clientes? || cargo.visualizar_itens? || cargo.visualizar_movimentacoes? || cargo.visualizar_compras? || cargo.visualizar_fornecedores? || cargo.visualizar_funcionarios? || cargo.visualizar_cargos? || cargo.visualizar_empresa? %>
+                    <span style="color: #9ca3af; font-size: 0.85rem; font-style: italic;">Sem acessos</span>
+                  <% end %>
+                </div>
+              </td>
+              
+              <td class="action-links">
+                <%= link_to "Editar", edit_cargo_path(cargo) %>
+                <% unless cargo.titulo.downcase == "admin" || cargo.titulo.downcase == "administrador" %>
+                  <%= link_to "Excluir", cargo, method: :delete, data: { turbo_confirm: "Excluir este cargo?" }, class: "delete" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="3" style="text-align: center; padding: 40px; color: #6b7280;">Nenhum cargo cadastrado ainda.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>
-
-<%= link_to "New cargo", new_cargo_path %>

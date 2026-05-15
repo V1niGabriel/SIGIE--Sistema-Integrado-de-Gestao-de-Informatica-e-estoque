@@ -2,6 +2,12 @@ class MovimentacaoEstoquesController < ApplicationController
   before_action :authenticate_funcionario!
   before_action :set_movimentacao, only: %i[ show ]
 
+  # Bloqueia a página de listagem se não puder visualizar
+  before_action -> { verificar_permissao(:visualizar_clientes) }, only: [:index, :show]
+  
+  # Bloqueia a criação se não puder criar
+  before_action -> { verificar_permissao(:criar_clientes) }, only: [:new, :create]
+
   def index
     @movimentacoes = MovimentacaoEstoque
       .includes(:item, :funcionario, :venda, :compra)

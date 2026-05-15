@@ -1,32 +1,102 @@
-<%= form_with(model: cargo) do |form| %>
+<%= form_with(model: cargo, class: "form-content") do |form| %>
+  
   <% if cargo.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(cargo.errors.count, "error") %> prohibited this cargo from being saved:</h2>
-
-      <ul>
-        <% cargo.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+    <div style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <strong>Não foi possível salvar:</strong>
+      <ul><% cargo.errors.each do |error| %><li><%= error.full_message %></li><% end %></ul>
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :titulo, style: "display: block" %>
-    <%= form.text_field :titulo %>
+  <div class="form-grid full">
+    <div>
+      <%= form.label :titulo, "Título do Cargo", class: "form-label" %>
+      <%= form.text_field :titulo, class: "form-input", placeholder: "Ex: Gerente de Vendas", required: true %>
+    </div>
+    <div>
+      <%= form.label :descricao, "Descrição das Atividades", class: "form-label" %>
+      <%= form.text_field :descricao, class: "form-input" %>
+    </div>
+  </div>
+  
+  <div class="form-grid" style="margin-bottom: 30px;">
+    <div>
+      <%= form.label :salario_base, "Salário Base (R$)", class: "form-label" %>
+      <%= form.number_field :salario_base, step: "0.01", class: "form-input", required: true %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :descricao, style: "display: block" %>
-    <%= form.text_field :descricao %>
+  <div data-controller="permissions">
+    
+    <div class="permissions-header">
+      <h3 class="permissions-title">Matriz de Permissões</h3>
+      
+      <div class="admin-toggle-wrapper" data-permissions-target="adminWrapper">
+        <label class="toggle-switch" style="margin: 0;">
+          <input type="checkbox" data-permissions-target="master" data-action="change->permissions#toggleAll">
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="admin-toggle-text" data-permissions-target="adminText">Acesso Total (Admin)</span>
+      </div>
+    </div>
+    
+    <div style="overflow-x: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 30px;">
+      <table class="data-table" style="width: 100%; border: 1px solid #e5e7eb; min-width: 700px;">
+        <thead style="background-color: #f9fafb;">
+          <tr>
+            <th>Módulo do Sistema</th>
+            <th style="text-align: center;">Visualizar</th>
+            <th style="text-align: center;">Criar</th>
+            <th style="text-align: center;">Editar</th>
+            <th style="text-align: center;">Excluir</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background-color: #f3f4f6;"><td colspan="5" style="padding: 8px 20px; font-size: 0.8rem; color: #4b5563; text-transform: uppercase; font-weight: bold;">Setor Comercial</td></tr>
+          <% ['vendas', 'orcamentos', 'clientes'].each do |modulo| %>
+            <tr>
+              <td style="text-transform: capitalize;"><strong><%= modulo == 'orcamentos' ? 'Orçamentos' : modulo.capitalize %></strong></td>
+              <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :"visualizar_#{modulo}", data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+              <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :"criar_#{modulo}", data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+              <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :"editar_#{modulo}", data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+              <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :"excluir_#{modulo}", data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+            </tr>
+          <% end %>
+
+          <tr style="background-color: #f3f4f6;"><td colspan="5" style="padding: 8px 20px; font-size: 0.8rem; color: #4b5563; text-transform: uppercase; font-weight: bold;">Estoque e Compras</td></tr>
+          <% ['itens', 'categorias', 'fabricantes', 'movimentacoes', 'compras', 'fornecedores'].each do |modulo| %>
+            <tr>
+              <td style="text-transform: capitalize;"><strong><%= modulo == 'itens' ? 'Itens (Estoque)' : modulo.capitalize %></strong></td>
+              <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :"visualizar_#{modulo}", data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+              <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :"criar_#{modulo}", data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+              <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :"editar_#{modulo}", data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+              <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :"excluir_#{modulo}", data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+            </tr>
+          <% end %>
+
+          <tr style="background-color: #f3f4f6;"><td colspan="5" style="padding: 8px 20px; font-size: 0.8rem; color: #4b5563; text-transform: uppercase; font-weight: bold;">Administração</td></tr>
+          <% ['funcionarios', 'cargos'].each do |modulo| %>
+            <tr>
+              <td style="text-transform: capitalize;"><strong><%= modulo.capitalize %></strong></td>
+              <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :"visualizar_#{modulo}", data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+              <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :"criar_#{modulo}", data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+              <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :"editar_#{modulo}", data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+              <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :"excluir_#{modulo}", data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+            </tr>
+          <% end %>
+          <tr>
+            <td><strong>Dados da Empresa</strong></td>
+            <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :visualizar_empresa, data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+            <td style="text-align: center; color: #9ca3af;">-</td>
+            <td style="text-align: center;"><label class="toggle-switch"><%= form.check_box :editar_empresa, data: { permissions_target: "checkbox", action: "change->permissions#checkMaster" } %><span class="toggle-slider"></span></label></td>
+            <td style="text-align: center; color: #9ca3af;">-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :salario_base, style: "display: block" %>
-    <%= form.text_field :salario_base %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+  <div class="form-actions">
+    <%= link_to "Cancelar", cargos_path, class: "btn-secondary" %>
+    <%= form.submit "Salvar Cargo", class: "btn-primary" %>
   </div>
 <% end %>
