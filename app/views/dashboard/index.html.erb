@@ -1,0 +1,152 @@
+<% content_for :title, "Dashboard — SIGIE" %>
+
+<div data-controller="dashboard">
+<div class="dashboard-container">
+
+  <%# ── HEADER + SELETOR DE PERÍODO ─────────────────────────────── %>
+  <div class="dashboard-header">
+    <div>
+      <h1 class="dashboard-title">Olá, <%= current_funcionario.nome.split.first %>!</h1>
+      <p class="dashboard-subtitle">Resumo do sistema — <%= Date.current.strftime("%d/%m/%Y") %></p>
+    </div>
+
+    <div class="periodo-selector">
+      <%= link_to "7 dias",   dashboard_path(periodo: "semana"), class: "periodo-btn #{"periodo-btn--active" if @periodo == "semana"}" %>
+      <%= link_to "30 dias",  dashboard_path(periodo: "mes"),    class: "periodo-btn #{"periodo-btn--active" if @periodo == "mes"}" %>
+      <%= link_to "12 meses", dashboard_path(periodo: "ano"),    class: "periodo-btn #{"periodo-btn--active" if @periodo == "ano"}" %>
+    </div>
+  </div>
+
+  <%# ── CARDS ───────────────────────────────────────────────────── %>
+  <div class="dashboard-cards">
+
+    <% if current_funcionario.cargo.visualizar_vendas? %>
+      <div class="dash-card dash-card--clickable"
+           data-action="click->dashboard#openModal"
+           data-dashboard-modal-param="modal-vendas">
+        <div class="dash-card-icon dash-card-icon--blue">💰</div>
+        <div class="dash-card-body">
+          <div class="dash-card-label">Vendas no período</div>
+          <div class="dash-card-value"><%= @vendas_count %></div>
+          <div class="dash-card-sub"><%= number_to_currency(@vendas_valor, unit: "R$", separator: ",", delimiter: ".") %></div>
+        </div>
+        <div class="dash-card-hint">Clique para detalhes</div>
+      </div>
+    <% end %>
+
+    <% if current_funcionario.cargo.visualizar_orcamentos? %>
+      <div class="dash-card dash-card--clickable"
+           data-action="click->dashboard#openModal"
+           data-dashboard-modal-param="modal-orcamentos">
+        <div class="dash-card-icon dash-card-icon--yellow">📋</div>
+        <div class="dash-card-body">
+          <div class="dash-card-label">Orçamentos</div>
+          <div class="dash-card-value"><%= @orcamentos_count %></div>
+          <% if @orcamentos_vencendo > 0 %>
+            <div class="dash-card-sub dash-card-sub--warning"><%= @orcamentos_vencendo %> vencendo em 7 dias</div>
+          <% else %>
+            <div class="dash-card-sub">Nenhum vencendo em breve</div>
+          <% end %>
+        </div>
+        <div class="dash-card-hint">Clique para detalhes</div>
+      </div>
+    <% end %>
+
+    <% if current_funcionario.cargo.visualizar_itens? %>
+      <div class="dash-card dash-card--clickable"
+           data-action="click->dashboard#openModal"
+           data-dashboard-modal-param="modal-estoque">
+        <div class="dash-card-icon dash-card-icon--purple">📦</div>
+        <div class="dash-card-body">
+          <div class="dash-card-label">Itens no estoque</div>
+          <div class="dash-card-value"><%= @itens_count %></div>
+          <% if @itens_estoque_baixo.any? %>
+            <div class="dash-card-sub dash-card-sub--danger"><%= @itens_estoque_baixo.size %> com estoque baixo</div>
+          <% else %>
+            <div class="dash-card-sub">Estoque saudável</div>
+          <% end %>
+        </div>
+        <div class="dash-card-hint">Clique para detalhes</div>
+      </div>
+    <% end %>
+
+    <% if current_funcionario.cargo.visualizar_compras? %>
+      <div class="dash-card dash-card--clickable"
+           data-action="click->dashboard#openModal"
+           data-dashboard-modal-param="modal-compras">
+        <div class="dash-card-icon dash-card-icon--red">🧾</div>
+        <div class="dash-card-body">
+          <div class="dash-card-label">Compras pendentes</div>
+          <div class="dash-card-value"><%= @compras_pendentes %></div>
+          <div class="dash-card-sub">Aguardando pagamento</div>
+        </div>
+        <div class="dash-card-hint">Clique para detalhes</div>
+      </div>
+    <% end %>
+
+    <% if current_funcionario.cargo.visualizar_vendas? && current_funcionario.cargo.visualizar_compras? %>
+      <% lucro_positivo = @lucro_periodo >= 0 %>
+      <div class="dash-card dash-card--clickable"
+           data-action="click->dashboard#openModal"
+           data-dashboard-modal-param="modal-lucro">
+        <div class="dash-card-icon <%= lucro_positivo ? "dash-card-icon--green" : "dash-card-icon--red" %>">
+          <%= lucro_positivo ? "📈" : "📉" %>
+        </div>
+        <div class="dash-card-body">
+          <div class="dash-card-label">Resultado do período</div>
+          <div class="dash-card-value <%= lucro_positivo ? "dash-value--positive" : "dash-value--negative" %>">
+            <%= number_to_currency(@lucro_periodo, unit: "R$", separator: ",", delimiter: ".") %>
+          </div>
+          <div class="dash-card-sub">Margem: <%= @margem %>%</div>
+        </div>
+        <div class="dash-card-hint">Clique para detalhes</div>
+      </div>
+    <% end %>
+
+    <% if current_funcionario.cargo.visualizar_clientes? %>
+      <div class="dash-card">
+        <div class="dash-card-icon dash-card-icon--green">👥</div>
+        <div class="dash-card-body">
+          <div class="dash-card-label">Clientes cadastrados</div>
+          <div class="dash-card-value"><%= @clientes_count %></div>
+          <div class="dash-card-sub">&nbsp;</div>
+        </div>
+        <%= link_to "Ver clientes →", clientes_path, class: "dash-card-link" %>
+      </div>
+    <% end %>
+
+    <% if current_funcionario.cargo.visualizar_funcionarios? %>
+      <div class="dash-card">
+        <div class="dash-card-icon dash-card-icon--gray">🏢</div>
+        <div class="dash-card-body">
+          <div class="dash-card-label">Funcionários</div>
+          <div class="dash-card-value"><%= @funcionarios_count %></div>
+          <div class="dash-card-sub">&nbsp;</div>
+        </div>
+        <%= link_to "Ver funcionários →", funcionarios_path, class: "dash-card-link" %>
+      </div>
+    <% end %>
+
+  </div>
+
+  <%# Usuário sem nenhuma permissão %>
+  <% if !current_funcionario.cargo.visualizar_vendas? && !current_funcionario.cargo.visualizar_orcamentos? &&
+        !current_funcionario.cargo.visualizar_itens? && !current_funcionario.cargo.visualizar_compras? &&
+        !current_funcionario.cargo.visualizar_clientes? && !current_funcionario.cargo.visualizar_funcionarios? %>
+    <div class="dash-empty">
+      <p>Seu cargo (<strong><%= current_funcionario.cargo.titulo %></strong>) ainda não possui permissões configuradas.</p>
+    </div>
+  <% end %>
+
+</div><%# fecha .dashboard-container %>
+
+<%# ═══════════════════════════════════════════════════════════ %>
+<%# MODAIS — dentro do controller para Stimulus enxergar        %>
+<%# ═══════════════════════════════════════════════════════════ %>
+<%= render "dashboard/modal_vendas" %>
+<%= render "dashboard/modal_orcamentos" %>
+<%= render "dashboard/modal_estoque" %>
+<%= render "dashboard/modal_compras" %>
+<%= render "dashboard/modal_lucro" %>
+
+</div><%# fecha data-controller="dashboard" %>

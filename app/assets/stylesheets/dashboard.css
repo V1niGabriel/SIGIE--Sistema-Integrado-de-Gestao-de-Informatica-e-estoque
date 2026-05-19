@@ -1,0 +1,454 @@
+/* ── HEADER ──────────────────────────────────────────────────────── */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.dashboard-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 4px;
+}
+
+.dashboard-subtitle {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ── SELETOR DE PERÍODO ──────────────────────────────────────────── */
+.periodo-selector {
+  display: flex;
+  gap: 6px;
+  background: #e5e7eb;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.periodo-btn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.periodo-btn:hover {
+  color: #1f2937;
+  background: rgba(255,255,255,0.6);
+}
+
+.periodo-btn--active {
+  background: #ffffff;
+  color: #2b2881;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* ── CARDS ───────────────────────────────────────────────────────── */
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+.dash-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #f3f4f6;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.dash-card--clickable {
+  cursor: pointer;
+}
+
+.dash-card--clickable:hover {
+  box-shadow: 0 6px 16px rgba(43,40,129,0.12);
+  transform: translateY(-2px);
+}
+
+.dash-card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.dash-card-icon--blue   { background: #dbeafe; }
+.dash-card-icon--yellow { background: #fef9c3; }
+.dash-card-icon--purple { background: #ede9fe; }
+.dash-card-icon--red    { background: #fee2e2; }
+.dash-card-icon--green  { background: #dcfce7; }
+.dash-card-icon--gray   { background: #f3f4f6; }
+
+.dash-card-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+}
+
+.dash-card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
+}
+
+.dash-card-sub            { font-size: 0.82rem; color: #9ca3af; }
+.dash-card-sub--warning   { color: #d97706; font-weight: 600; }
+.dash-card-sub--danger    { color: #dc2626; font-weight: 600; }
+
+.dash-card-hint {
+  font-size: 0.75rem;
+  color: #c4b5fd;
+  margin-top: auto;
+}
+
+.dash-card-link {
+  font-size: 0.82rem;
+  color: #2b2881;
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: auto;
+}
+
+.dash-card-link:hover { text-decoration: underline; }
+
+/* ── TABELA INTERNA ──────────────────────────────────────────────── */
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin-bottom: 16px;
+}
+
+.dash-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.dash-table td {
+  padding: 10px;
+  color: #374151;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.dash-table tr:last-child td { border-bottom: none; }
+
+.dash-table a { color: #2b2881; text-decoration: none; font-weight: 500; }
+.dash-table a:hover { text-decoration: underline; }
+
+.dash-qty--low  { color: #d97706; font-weight: 700; }
+.dash-qty--zero { color: #dc2626; font-weight: 700; }
+
+/* ── MODAL ───────────────────────────────────────────────────────── */
+.dash-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(17,24,39,0.55);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.dash-modal-overlay--open {
+  display: flex;
+}
+
+.dash-modal-box {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 28px 32px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: modalIn 0.2s ease-out;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(-16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)     scale(1); }
+}
+
+.dash-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.dash-modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.dash-modal-close {
+  background: #f3f4f6;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #6b7280;
+  line-height: 1;
+  transition: background 0.15s;
+}
+
+.dash-modal-close:hover { background: #e5e7eb; color: #1f2937; }
+
+/* ── MINI STATS DENTRO DO MODAL ──────────────────────────────────── */
+.dash-modal-stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.dash-mini-stat {
+  flex: 1;
+  min-width: 120px;
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  border: 1px solid #f3f4f6;
+}
+
+.dash-mini-stat--warning { background: #fffbeb; border-color: #fde68a; }
+.dash-mini-stat--danger  { background: #fef2f2; border-color: #fecaca; }
+.dash-mini-stat--success { background: #f0fdf4; border-color: #bbf7d0; }
+
+.dash-mini-stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.dash-mini-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* ── GRÁFICO ─────────────────────────────────────────────────────── */
+.dash-modal-chart-wrapper {
+  margin-bottom: 24px;
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid #f3f4f6;
+}
+
+.dash-modal-section-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dash-modal-cta {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2b2881;
+  text-decoration: none;
+}
+
+.dash-modal-cta:hover { text-decoration: underline; }
+
+/* ── CARD DE LUCRO ───────────────────────────────────────────────── */
+.dash-value--positive { color: #16a34a; }
+.dash-value--negative { color: #dc2626; }
+
+/* ── MODAL DE LUCRO (usa .modal-overlay/.modal-box do vendas.css) ── */
+.lucro-modal-box {
+  max-width: 960px !important;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.lucro-summary-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.lucro-summary-item {
+  flex: 1;
+  min-width: 160px;
+  border-radius: 10px;
+  padding: 14px 18px;
+  border: 1px solid transparent;
+}
+
+.lucro-summary-item--receita  { background: #f0fdf4; border-color: #bbf7d0; }
+.lucro-summary-item--custo    { background: #fef2f2; border-color: #fecaca; }
+.lucro-summary-item--lucro    { background: #eff6ff; border-color: #bfdbfe; }
+.lucro-summary-item--prejuizo { background: #fef2f2; border-color: #fca5a5; }
+
+.lucro-summary-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.lucro-summary-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.lucro-summary-margem {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.lucro-chart-wrapper {
+  background: #fafafa;
+  border: 1px solid #f3f4f6;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+/* ── DUAS COLUNAS LADO A LADO ────────────────────────────────────── */
+.lucro-colunas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .lucro-colunas { grid-template-columns: 1fr; }
+}
+
+.lucro-coluna {
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.lucro-coluna--compras { background: #fff9f9; border-color: #fecaca; }
+.lucro-coluna--vendas  { background: #f9fff9; border-color: #bbf7d0; }
+
+.lucro-coluna-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.lucro-coluna-icon { font-size: 1.1rem; }
+
+.lucro-coluna-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.lucro-valor-pos { color: #16a34a; font-weight: 700; font-size: 0.95rem; }
+.lucro-valor-neg { color: #dc2626; font-weight: 700; font-size: 0.95rem; }
+
+.lucro-coluna-empty {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 16px 0;
+}
+
+/* ── COMPLEMENTOS DOS MODAIS ─────────────────────────────────────── */
+.dash-estoque-ok {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #16a34a;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.dash-chart-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  margin: 0 0 10px;
+}
+
+.dash-compras-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.dash-compras-lista {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 580px) {
+  .dash-compras-layout { flex-direction: column; }
+}
+
+/* ── ESTADO VAZIO ────────────────────────────────────────────────── */
+.dash-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+  font-size: 0.95rem;
+}

@@ -1,0 +1,67 @@
+<% return unless current_funcionario.cargo.visualizar_compras? %>
+
+<div id="modal-compras" class="dash-modal-overlay" data-dashboard-target="modal"
+     data-action="click->dashboard#closeOnOverlay">
+  <div class="dash-modal-box">
+    <div class="dash-modal-header">
+      <h2 class="dash-modal-title">🧾 Compras — <%= periodo_label %></h2>
+    </div>
+
+    <div class="dash-modal-stats">
+      <div class="dash-mini-stat dash-mini-stat--warning">
+        <div class="dash-mini-stat-label">Pendentes</div>
+        <div class="dash-mini-stat-value"><%= @compras_pendentes %></div>
+      </div>
+      <div class="dash-mini-stat dash-mini-stat--success">
+        <div class="dash-mini-stat-label">Pagas</div>
+        <div class="dash-mini-stat-value"><%= @compras_pagas %></div>
+      </div>
+      <div class="dash-mini-stat dash-mini-stat--danger">
+        <div class="dash-mini-stat-label">Canceladas</div>
+        <div class="dash-mini-stat-value"><%= @compras_canceladas %></div>
+      </div>
+      <div class="dash-mini-stat">
+        <div class="dash-mini-stat-label">Total no período</div>
+        <div class="dash-mini-stat-value"><%= number_to_currency(@compras_valor_total, unit: "R$", separator: ",", delimiter: ".") %></div>
+      </div>
+    </div>
+
+    <div class="dash-compras-layout">
+      <div class="dash-modal-chart-wrapper" style="max-width: 260px;">
+        <canvas id="chart-compras"
+                data-pendentes="<%= @compras_pendentes %>"
+                data-pagas="<%= @compras_pagas %>"
+                data-canceladas="<%= @compras_canceladas %>"
+                data-dashboard-target="chartCompras">
+        </canvas>
+      </div>
+
+      <div class="dash-compras-lista">
+        <h3 class="dash-modal-section-title">Compras no período</h3>
+        <% if @compras_recentes.any? %>
+          <table class="dash-table">
+            <thead>
+              <tr><th>Fornecedor</th><th>Vencimento</th><th>Status</th><th>Valor</th></tr>
+            </thead>
+            <tbody>
+              <% @compras_recentes.each do |c| %>
+                <tr>
+                  <td><%= c.fornecedor&.nome || "—" %></td>
+                  <td><%= c.data_vencimento&.strftime("%d/%m/%Y") %></td>
+                  <td>
+                    <span class="badge-status badge-<%= c.status %>"><%= c.status&.capitalize %></span>
+                  </td>
+                  <td><%= number_to_currency(c.valor_total, unit: "R$", separator: ",", delimiter: ".") %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <p class="lucro-coluna-empty">Nenhuma compra no período.</p>
+        <% end %>
+      </div>
+    </div>
+
+    <%= link_to "Ver todas as compras →", compras_path, class: "dash-modal-cta" %>
+  </div>
+</div>

@@ -41,5 +41,6 @@ Rails.application.routes.draw do
   # 3 PÁGINA INICIAL DO SISTEMA
   # Defines the root path route ("/")
   # root "posts#index"
-  root "vendas#index"
+  get "dashboard", to: "dashboard#index", as: :dashboard
+  root "dashboard#index"
 end

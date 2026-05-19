@@ -1,0 +1,53 @@
+<% return unless current_funcionario.cargo.visualizar_vendas? %>
+
+<div id="modal-vendas" class="dash-modal-overlay" data-dashboard-target="modal"
+     data-action="click->dashboard#closeOnOverlay">
+  <div class="dash-modal-box">
+    <div class="dash-modal-header">
+      <h2 class="dash-modal-title">💰 Vendas — <%= periodo_label %></h2>
+    </div>
+
+    <div class="dash-modal-stats">
+      <div class="dash-mini-stat">
+        <div class="dash-mini-stat-label">Total de vendas</div>
+        <div class="dash-mini-stat-value"><%= @vendas_count %></div>
+      </div>
+      <div class="dash-mini-stat">
+        <div class="dash-mini-stat-label">Faturamento</div>
+        <div class="dash-mini-stat-value"><%= number_to_currency(@vendas_valor, unit: "R$", separator: ",", delimiter: ".") %></div>
+      </div>
+      <div class="dash-mini-stat">
+        <div class="dash-mini-stat-label">Ticket médio</div>
+        <div class="dash-mini-stat-value"><%= number_to_currency(@ticket_medio, unit: "R$", separator: ",", delimiter: ".") %></div>
+      </div>
+    </div>
+
+    <div class="dash-modal-chart-wrapper">
+      <canvas id="chart-vendas"
+              data-labels="<%= @vendas_chart_labels.to_json %>"
+              data-values="<%= @vendas_chart_values.to_json %>"
+              data-dashboard-target="chartVendas">
+      </canvas>
+    </div>
+
+    <% if @ultimas_vendas.any? %>
+      <h3 class="dash-modal-section-title">Últimas vendas</h3>
+      <table class="dash-table">
+        <thead>
+          <tr><th>#</th><th>Cliente</th><th>Data</th><th>Valor</th></tr>
+        </thead>
+        <tbody>
+          <% @ultimas_vendas.each do |v| %>
+            <tr>
+              <td><%= link_to "##{v.id}", venda_path(v) %></td>
+              <td><%= v.cliente&.nome_razao_social || "—" %></td>
+              <td><%= v.data_venda&.strftime("%d/%m/%Y") %></td>
+              <td><%= number_to_currency(v.valor_total, unit: "R$", separator: ",", delimiter: ".") %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= link_to "Ver todas as vendas →", vendas_path, class: "dash-modal-cta" %>
+    <% end %>
+  </div>
+</div>

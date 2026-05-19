@@ -1,0 +1,104 @@
+<% return unless current_funcionario.cargo.visualizar_vendas? && current_funcionario.cargo.visualizar_compras? %>
+
+<% lucro_positivo = @lucro_periodo >= 0 %>
+
+<div id="modal-lucro" class="modal-overlay" data-dashboard-target="modal"
+     data-action="click->dashboard#closeOnOverlay" style="display:none;">
+  <div class="modal-box lucro-modal-box">
+
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <%= lucro_positivo ? "📈" : "📉" %>
+        Resultado — <%= periodo_label %>
+      </h3>
+    </div>
+
+    <%# ── RESUMO TOPO ─────────────────────────────────────────── %>
+    <div class="lucro-summary-bar">
+      <div class="lucro-summary-item lucro-summary-item--receita">
+        <div class="lucro-summary-label">↑ Receita (Vendas)</div>
+        <div class="lucro-summary-value"><%= number_to_currency(@vendas_valor, unit: "R$", separator: ",", delimiter: ".") %></div>
+      </div>
+      <div class="lucro-summary-item lucro-summary-item--custo">
+        <div class="lucro-summary-label">↓ Custo (Compras pagas)</div>
+        <div class="lucro-summary-value"><%= number_to_currency(@custo_periodo, unit: "R$", separator: ",", delimiter: ".") %></div>
+      </div>
+      <div class="lucro-summary-item <%= lucro_positivo ? "lucro-summary-item--lucro" : "lucro-summary-item--prejuizo" %>">
+        <div class="lucro-summary-label">= <%= lucro_positivo ? "Lucro" : "Prejuízo" %></div>
+        <div class="lucro-summary-value"><%= number_to_currency(@lucro_periodo.abs, unit: "R$", separator: ",", delimiter: ".") %></div>
+        <div class="lucro-summary-margem">Margem: <%= @margem %>%</div>
+      </div>
+    </div>
+
+    <%# ── GRÁFICO BARRAS AGRUPADAS ─────────────────────────────── %>
+    <div class="lucro-chart-wrapper">
+      <canvas id="chart-lucro"
+              data-labels="<%= @lucro_labels.to_json %>"
+              data-receita="<%= @lucro_receita.to_json %>"
+              data-custo="<%= @lucro_custo.to_json %>"
+              data-dashboard-target="chartLucro">
+      </canvas>
+    </div>
+
+    <%# ── DUAS COLUNAS: COMPRAS | VENDAS ─────────────────────── %>
+    <div class="lucro-colunas">
+
+      <div class="lucro-coluna lucro-coluna--compras">
+        <div class="lucro-coluna-header">
+          <span class="lucro-coluna-icon">🧾</span>
+          <span>Compras no período</span>
+        </div>
+        <div class="lucro-coluna-stat">
+          <span><%= @compras_periodo_lista.size %> registros</span>
+          <span class="lucro-valor-neg"><%= number_to_currency(@custo_periodo, unit: "R$", separator: ",", delimiter: ".") %></span>
+        </div>
+        <% if @compras_periodo_lista.any? %>
+          <table class="dash-table">
+            <thead><tr><th>Fornecedor</th><th>Status</th><th>Valor</th></tr></thead>
+            <tbody>
+              <% @compras_periodo_lista.each do |c| %>
+                <tr>
+                  <td><%= c.fornecedor&.nome || "—" %></td>
+                  <td><span class="badge-status badge-<%= c.status %>"><%= c.status&.capitalize %></span></td>
+                  <td><%= number_to_currency(c.valor_total, unit: "R$", separator: ",", delimiter: ".") %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <p class="lucro-coluna-empty">Nenhuma compra no período.</p>
+        <% end %>
+        <%= link_to "Ver todas →", compras_path, class: "dash-modal-cta" %>
+      </div>
+
+      <div class="lucro-coluna lucro-coluna--vendas">
+        <div class="lucro-coluna-header">
+          <span class="lucro-coluna-icon">💰</span>
+          <span>Vendas no período</span>
+        </div>
+        <div class="lucro-coluna-stat">
+          <span><%= @vendas_count %> registros · ticket médio <%= number_to_currency(@ticket_medio, unit: "R$", separator: ",", delimiter: ".") %></span>
+          <span class="lucro-valor-pos"><%= number_to_currency(@vendas_valor, unit: "R$", separator: ",", delimiter: ".") %></span>
+        </div>
+        <% if @ultimas_vendas.any? %>
+          <table class="dash-table">
+            <thead><tr><th>Cliente</th><th>Data</th><th>Valor</th></tr></thead>
+            <tbody>
+              <% @ultimas_vendas.each do |v| %>
+                <tr>
+                  <td><%= link_to v.cliente&.nome_razao_social || "—", venda_path(v) %></td>
+                  <td><%= v.data_venda&.strftime("%d/%m/%Y") %></td>
+                  <td><%= number_to_currency(v.valor_total, unit: "R$", separator: ",", delimiter: ".") %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <p class="lucro-coluna-empty">Nenhuma venda no período.</p>
+        <% end %>
+        <%= link_to "Ver todas →", vendas_path, class: "dash-modal-cta" %>
+      </div>
+
+    </div>
+  </div>
+</div>

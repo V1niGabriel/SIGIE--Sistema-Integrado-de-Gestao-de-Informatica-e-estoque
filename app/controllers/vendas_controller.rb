@@ -3,17 +3,10 @@ class VendasController < ApplicationController
   before_action :set_venda, only: %i[ show edit update destroy ]
   before_action :load_collections, only: %i[ new edit create update ]
 
-  # Bloqueia a página de listagem se não puder visualizar
-  before_action -> { verificar_permissao(:visualizar_clientes) }, only: [:index, :show]
-  
-  # Bloqueia a criação se não puder criar
-  before_action -> { verificar_permissao(:criar_clientes) }, only: [:new, :create]
-  
-  # Bloqueia a edição se não puder editar
-  before_action -> { verificar_permissao(:editar_clientes) }, only: [:edit, :update]
-  
-  # Bloqueia a exclusão
-  before_action -> { verificar_permissao(:excluir_clientes) }, only: [:destroy]
+  before_action -> { verificar_permissao(:visualizar_vendas) }, only: [:index, :show]
+  before_action -> { verificar_permissao(:criar_vendas) },     only: [:new, :create]
+  before_action -> { verificar_permissao(:editar_vendas) },    only: [:edit, :update]
+  before_action -> { verificar_permissao(:excluir_vendas) },   only: [:destroy]
 
   def index
     @vendas = Venda.includes(:cliente, :funcionario).order(data_venda: :desc)

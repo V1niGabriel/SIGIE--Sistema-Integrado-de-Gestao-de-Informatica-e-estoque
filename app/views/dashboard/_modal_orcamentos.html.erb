@@ -1,0 +1,56 @@
+<% return unless current_funcionario.cargo.visualizar_orcamentos? %>
+
+<div id="modal-orcamentos" class="dash-modal-overlay" data-dashboard-target="modal"
+     data-action="click->dashboard#closeOnOverlay">
+  <div class="dash-modal-box">
+    <div class="dash-modal-header">
+      <h2 class="dash-modal-title">📋 Orçamentos — <%= periodo_label %></h2>
+    </div>
+
+    <div class="dash-modal-stats">
+      <div class="dash-mini-stat">
+        <div class="dash-mini-stat-label">Criados no período</div>
+        <div class="dash-mini-stat-value"><%= @orcamentos_count %></div>
+      </div>
+      <div class="dash-mini-stat <%= @orcamentos_vencendo > 0 ? "dash-mini-stat--warning" : "" %>">
+        <div class="dash-mini-stat-label">Vencendo em 7 dias</div>
+        <div class="dash-mini-stat-value"><%= @orcamentos_vencendo %></div>
+      </div>
+      <div class="dash-mini-stat <%= @orcamentos_vencidos > 0 ? "dash-mini-stat--danger" : "" %>">
+        <div class="dash-mini-stat-label">Vencidos</div>
+        <div class="dash-mini-stat-value"><%= @orcamentos_vencidos %></div>
+      </div>
+    </div>
+
+    <div class="dash-modal-chart-wrapper">
+      <p class="dash-chart-label">Orçamentos criados por dia</p>
+      <canvas id="chart-orcamentos"
+              data-labels="<%= @orcamentos_chart_labels.to_json %>"
+              data-values="<%= @orcamentos_chart_values.to_json %>"
+              data-dashboard-target="chartOrcamentos">
+      </canvas>
+    </div>
+
+    <% if @orcamentos_recentes.any? %>
+      <h3 class="dash-modal-section-title">Orçamentos no período</h3>
+      <table class="dash-table">
+        <thead>
+          <tr><th>Cliente</th><th>Criado em</th><th>Válido até</th></tr>
+        </thead>
+        <tbody>
+          <% @orcamentos_recentes.each do |o| %>
+            <tr>
+              <td><%= link_to o.cliente&.nome_razao_social || "—", orcamento_path(o) %></td>
+              <td><%= o.data_orcamento&.strftime("%d/%m/%Y") %></td>
+              <td class="<%= o.data_validade < Date.current ? "dash-qty--zero" : o.data_validade <= 7.days.from_now.to_date ? "dash-qty--low" : "" %>">
+                <%= o.data_validade&.strftime("%d/%m/%Y") %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+
+    <%= link_to "Ver todos os orçamentos →", orcamentos_path, class: "dash-modal-cta" %>
+  </div>
+</div>

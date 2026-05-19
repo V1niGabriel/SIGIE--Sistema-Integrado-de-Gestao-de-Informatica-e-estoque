@@ -16,6 +16,7 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <%= javascript_importmap_tags %>
   </head>
 
@@ -34,17 +35,16 @@
           <nav class="sidebar-nav">
             
             <!-- GRUPO: PRINCIPAL -->
-            <% if cargo.visualizar_vendas? || cargo.visualizar_orcamentos? %>
-              <div class="nav-group">
-                <div class="nav-title">Principal</div>
-                <% if cargo.visualizar_vendas? %>
-                  <%= link_to "Início / Vendas", root_path, class: "nav-link" %>
-                <% end %>
-                <% if cargo.visualizar_orcamentos? %>
-                  <%= link_to "Orçamentos", orcamentos_path, class: "nav-link" %>
-                <% end %>
-              </div>
-            <% end %>
+            <div class="nav-group">
+              <div class="nav-title">Principal</div>
+              <%= link_to "Início", root_path, class: "nav-link" %>
+              <% if cargo.visualizar_vendas? %>
+                <%= link_to "Vendas", vendas_path, class: "nav-link" %>
+              <% end %>
+              <% if cargo.visualizar_orcamentos? %>
+                <%= link_to "Orçamentos", orcamentos_path, class: "nav-link" %>
+              <% end %>
+            </div>
 
             <!-- GRUPO: CADASTROS -->
             <% if cargo.visualizar_clientes? || cargo.visualizar_itens? %>
